@@ -221,11 +221,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <a href="#analysis">专项分析</a>
     </nav>
     <div class="nav-actions">
-      <span id="adminButtons" style="display:none">
-        <button class="btn btn-primary" onclick="document.getElementById('excelFileInput').click()">📥 导入Excel</button>
-        <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display:none" onchange="importExcel(this)">
-        <button class="btn btn-outline" onclick="copyJSON()" id="copyJsonBtn">📋 复制JSON</button>
-      </span>
       <button class="btn btn-outline" onclick="exportReport()">导出报告</button>
     </div>
   </div>
@@ -418,183 +413,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   <div class="modal" id="modalContent"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-// Data
-let collectData = [];
-let urbanData = [];
-let sanitationData = [];
-let allData = {collect:collectData,urban:urbanData,sanitation:sanitationData};
+const collectData = [
+  {id:'c1',province:'山东省',region:'青岛市市北区',title:'市北区数字城管信息采集项目',content:'信息采集、市容巡查',budget:150.5,time:'2026年6月',work:'数字城管信息采集服务',buyer:'青岛市市北区社会治理推进中心',winner:'青岛恒福人力资源管理有限公司',link:'https://ggzy.qingdao.gov.cn/c/TradeDetals-ZtbShow/153073-5070-1-2-0/d8aea15a-47bb-4434-ad03-b747c0e7931e-B03CE5B6FC1D2D3C2D5FCEBC39AA2406.html',remark:'服务期1年',priority:'low'},
+  {id:'c2',province:'河北省',region:'承德市',title:'承德市数字化城市管理信息采集服务',content:'城市管理信息采集',budget:945,time:'2026年5月',work:'120平方公里网格化管理，事部件信息采集、核实、核查',buyer:'承德市城市管理综合行政执法局',winner:'承德鸿赋企业管理咨询有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/zbgg/202505/t20250521_24632273.htm',remark:'服务期1年,大额项目',priority:'high'},
+  {id:'c3',province:'江苏省',region:'徐州市',title:'徐州市城市管理信息采集市场化服务项目',content:'人工+智能信息采集',budget:2520,time:'2026年5月',work:'城市管理信息采集市场化服务',buyer:'徐州市城市管理综合行政执法局',winner:'政通智慧城市运营科技有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/zbgg/202501/t20250102_24005472.htm',remark:'3年期,年均840万,核心大额',priority:'high'},
+  {id:'c4',province:'河北省',region:'石家庄市',title:'石家庄市数字城管信息采集服务外包项目',content:'人工+AI智能车载巡查',budget:721,time:'2026年5月',work:'数字城管信息采集服务外包',buyer:'石家庄市市容管理考评中心',winner:'北明软件有限公司',link:'https://www.sjzsggzyjyzx.org.cn/jyxxzczb/164861.jhtml',remark:'3年期,年均240万,核心大额',priority:'high'},
+  {id:'c5',province:'江苏省',region:'无锡市新吴区',title:'新吴区2026-2028年城市精细化管理"第三方"信息采集服务项目',content:'第三方信息采集、市容市政巡查',budget:440,time:'招标中,2026年5月18日开标',work:'城市精细化管理第三方信息采集服务',buyer:'无锡高新区（新吴区）城市管理局',winner:'无锡润元智能物业管理有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260420_26429381.htm',remark:'2年期,年均220万,已发公告',priority:'medium'},
+  {id:'c6',province:'四川省',region:'攀枝花市东区',title:'2026年数字化城市管理信息系统（"城市啄木鸟"行动）',content:'市容巡查、城管采集',budget:62.7,time:'2026年6月',work:'全域网格日常巡查、信息采集上报、城市啄木鸟随手拍核查处置',buyer:'攀枝花市东区综合行政执法局',winner:'攀枝花市渡口城市管理服务有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202404/t20240429_21969499.htm',remark:'服务期1年',priority:'low'},
+  {id:'c7',province:'山东省',region:'青岛市即墨区',title:'智慧城管执法巡查',content:'违建巡查作业、无人机巡检',budget:113,time:'已发中标公告',work:'200平方公里无人机违建巡查、在建工地巡检,分辨率优于0.1米',buyer:'青岛市即墨区综合行政执法局',winner:'山东瑞智飞控科技有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/cjgg/202504/t20250414_24435708.htm',remark:'服务期1年',priority:'medium'},
+  {id:'c8',province:'山东省',region:'日照市',title:'日照市城市管理信息采集项目',content:'信息采集服务',budget:300,time:'2026年5月',work:'全域城管信息采集、网格市容巡查、案件核查闭环',buyer:'日照市城市管理局机关',winner:'A包:数字日照有限公司 B包:日照瑞岚城市环境服务有限责任公司',link:'http://ggzyjy.rizhao.gov.cn/rzwz/jyxx/004002/004002004/20250730/72e8a9be-9104-4cf8-96d9-0b7c94af4bed.html',remark:'服务期1年',priority:'medium'},
+  {id:'c9',province:'浙江省',region:'温州市乐清市',title:'2026年度乐清市智慧城管信息采集与坐席人员服务外包项目',content:'智慧城管信息采集+坐席人员服务外包',budget:99,time:'2026年6月',work:'智慧城管信息采集与坐席人员服务外包',buyer:'乐清市综合行政执法局',winner:'天津顺畅智慧城市运营管理有限责任公司',link:'https://ggzy.zj.gov.cn/jyxxgk/002002/002002002/20251126/e6146353-65bf-4e6f-b0d5-1dd5c5f620c1.html',remark:'服务期1年',priority:'low'},
+  {id:'c10',province:'湖北省',region:'随州市曾都区',title:'2026年智慧城管建设项目',content:'人工巡查+智能抓拍+空中巡查',budget:70,time:'2026年5月',work:'智慧城管建设，人工巡查+智能抓拍+空中巡查',buyer:'随州市曾都区城市管理指挥中心',winner:'中国移动湖北公司随州分公司',link:'http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202509/t20250910_25324752.htm',remark:'服务期1年',priority:'low'}
+];
+
+const urbanData = [
+  {id:'u1',region:'广东-深圳-坪山区',product:'运管服',incomeType:'项目开发-定制化开发-升级优化',title:'坪山区运管服平台升级优化',budget:30,time:'2026/5/12',deadline:'2026/5/15',buyer:'深圳市坪山区城市管理和综合执法局',phone:'0755-89381024',team:'广东区',link:'https://www.qianlima.com/bid-596396440.html',priority:'low'},
+  {id:'u2',region:'广西-南宁-青秀区',product:'运管服',incomeType:'项目开发-定制化开发-升级优化',title:'南宁市智慧城管信息中心运管服升级优化',budget:29.6,time:'2026/5/12',deadline:'2026/5/15',buyer:'南宁市智慧城管信息中心',phone:'0771-5827629',team:'合-四川区',agent:'广西邕政采购代理有限公司',agentPhone:'0771-2225338',link:'https://www.qianlima.com/bid-596206014.html',priority:'low'},
+  {id:'u3',region:'江苏-南京-江宁区',product:'建筑垃圾',incomeType:'项目开发-定制化开发-新建项目',title:'南京市江宁区建筑垃圾管理系统新建',budget:245.8,time:'2026/5/12',deadline:'2026/6/5',buyer:'南京市江宁区城市管理局（本级）',phone:'025-52190456',agent:'南京市公共资源交易中心江宁分中心',agentPhone:'025-69613983',team:'湖南区',link:'https://www.qianlima.com/bid-596319539.html',priority:'high'},
+  {id:'u4',region:'广东-广州',product:'建筑垃圾',incomeType:'专业服务-运维服务',title:'广州市余泥渣土管理处运维服务',budget:156.2,time:'2026/5/12',deadline:'—',buyer:'广州市余泥渣土管理处',team:'广东区',link:'https://www.qianlima.com/bid-596380086.html',priority:'medium'},
+  {id:'u5',region:'河北-唐山-路北区',product:'城市生命线',incomeType:'项目开发-定制化开发-升级优化',title:'唐山市路北区城市生命线升级优化',budget:870,time:'2026/5/12',deadline:'—',buyer:'唐山市路北区住房和城乡建设局',team:'合-山西区',link:'https://www.qianlima.com/bid-596230511.html',priority:'high'},
+  {id:'u6',region:'西藏-日喀则-桑珠孜区',product:'城市生命线',incomeType:'项目开发-定制化开发-新建项目',title:'日喀则市城市生命线新建项目',budget:3082.3,time:'2026/5/7',deadline:'—',buyer:'日喀则市住房和城乡建设局',link:'https://www.qianlima.com/bid-594761140.html',priority:'high'},
+  {id:'u7',region:'江西-吉安-峡江县',product:'城市生命线',incomeType:'项目开发-定制化开发-新建项目',title:'峡江县城市生命线新建项目',budget:450,time:'2026/5/7',deadline:'—',buyer:'峡江县市容管理服务中心',link:'https://www.qianlima.com/bid-594953552.html',priority:'medium'},
+  {id:'u8',region:'河南-商丘-睢阳区',product:'城市生命线',incomeType:'项目开发-定制化开发-新建项目',title:'商丘市城市生命线新建项目',budget:213.5,time:'2026/5/7',deadline:'2026/5/28',buyer:'商丘市城市管理局',phone:'0370-3299006',agent:'河南鸿森工程管理咨询有限公司',agentPhone:'0370-2221619',link:'https://www.qianlima.com/bid-594981110.html',priority:'medium'},
+  {id:'u9',region:'河南-安阳-安阳县',product:'城市生命线',incomeType:'项目开发-定制化开发-新建项目',title:'安阳县城市生命线新建项目',budget:27.4,time:'2026/5/7',deadline:'2026/5/19',buyer:'安阳县住房和城乡建设局',phone:'137037288772',agent:'河南英格工程管理有限公司',link:'https://www.qianlima.com/bid-595114068.html',priority:'low'},
+  {id:'u10',region:'广东-深圳-坪山区',product:'运管服',incomeType:'项目开发-定制化开发-升级优化',title:'坪山区运管服平台升级优化（补充）',budget:30,time:'2026/5/12',deadline:'2026/5/15',buyer:'深圳市坪山区城市管理和综合执法局',team:'广东区',link:'https://www.qianlima.com/bid-596396440.html',priority:'low'}
+];
+
+const sanitationData = [
+  {id:'s1',title:'潍坊市城市管理行政执法支队渣土车智能监管系统升级及信创改造',time:'2026/5/12',budget:100.52,province:'山东',city:'潍坊',content:'渣土车智能监管系统升级改造（含APP）、城市运管服平台信创适配改造（智慧环卫、智慧公厕等系统）',incomeType:'信息化项目',link:'https://www.qianlima.com/bid-596014793.html',strategy:'建议跟进政府侧，主推智能车辆监管系统（网页和移动端）、城市运管服平台信创适配改造',priority:'medium'},
+  {id:'s2',title:'福州长乐湖南镇环卫一体化',time:'2026/5/11',budget:667.94,province:'福建',city:'福州-长乐',content:'智慧环卫一体化管理：对在岗状态、考勤状态、作业状态实时监测；对工作量、工位、作业品质等数据进行多维度分析评估',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-596014793.html',strategy:'建议跟进企业侧，主推智慧环卫系统',remark:'有软著：图元环卫一体化管理信息系统V1.0',priority:'medium'},
+  {id:'s3',title:'廉江市智慧环卫综合管理系统及智慧违建治理平台建设',time:'2026/5/11',budget:576.84,province:'广东',city:'湛江-廉江',content:'数据归集与粤治慧专题建设、智慧环卫综合管理系统（含环卫收费管理）、智慧违建治理平台（无人机+AI）、物业租赁管理系统',incomeType:'信息化项目',link:'https://www.qianlima.com/bid-596045228.html',strategy:'建议跟进政府侧，主推运管服平台+智慧环卫系统、垃圾收费系统',priority:'high'},
+  {id:'s4',title:'瓯海区生活垃圾直运服务项目',time:'2026/5/9',budget:213.53,province:'浙江',city:'温州',content:'城市智慧环卫收运平台：实时显示车辆位置与行驶路线、建立收运台账、记录垃圾来源种类数量去向',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-595593468.html',strategy:'建议跟进企业侧，主推智慧环卫车辆管理、生活垃圾管理系统（车辆定位、AI路线规划、垃圾溯源）',priority:'medium'},
+  {id:'s5',title:'永嘉县岩头镇城区保洁服务',time:'2026/5/8',budget:54.6,province:'浙江',city:'温州-永嘉县',content:'道路机械化清扫、分类收运、公厕管理、智能手环与智慧城市管理系统兼容',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-595206025.html',strategy:'建议跟进政府侧，主推智慧环卫系统"人机协同"理念',priority:'low'},
+  {id:'s6',title:'杭海路(西段)及周边道路保洁服务',time:'2026/5/8',budget:125,province:'浙江',city:'杭州-上城区',content:'道路普扫、巡回保洁、垃圾清运、分类收运方案',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-595124214.html',strategy:'建议跟进企业侧，主推智能环卫系统（人机结合、垃圾清运分类收运）',priority:'low'},
+  {id:'s7',title:'清江浦区大运河以南片区环卫作业服务',time:'2026/5/7',budget:3300,province:'江苏',city:'淮安-清江浦区',content:'道路综合清扫保洁、垃圾转运、中转站运营管理、公厕保洁及设施维护',incomeType:'设备更新服务',link:'https://www.qianlima.com/bid-594920155.html',strategy:'建议跟进企业侧，主推智能环卫系统（机械作业车辆管理、人工保洁人员管理、垃圾收运全流程、中转站运维、公厕管理）',priority:'high'},
+  {id:'s8',title:'茂名市新型智慧城市（一期）项目',time:'2026/5/2',budget:133550,province:'广东',city:'茂名',content:'8个领域信息平台：智慧警务、智慧政务、智慧交通、城市运行管理服务平台、全民健康信息平台、智慧林业、水环境监管、应急管理系统',incomeType:'信息化项目',link:'https://www.qianlima.com/bid-594250445.html',strategy:'建议跟进政府侧，主推智慧环卫系统',priority:'high'},
+  {id:'s9',title:'汕尾市城区"数字城市"信息化建设项目（一期）',time:'2026/5/2',budget:26645,province:'广东',city:'汕尾-城区',content:'数字城市基础支撑底座、智慧城管+智慧文旅+智慧交通+基层治理体系、智慧环卫设施、充电桩、智慧灯杆等',incomeType:'信息化项目',link:'https://www.qianlima.com/bid-594247221.html',strategy:'建议跟进政府侧，主推智慧环卫系统及垃圾收费管理系统',remark:'专项债项目',priority:'high'},
+  {id:'s10',title:'天津港保税区2026-2028年生活垃圾综合服务项目',time:'2026/4/30',budget:4225.02,province:'天津',city:'天津-滨海新区',content:'智慧运营平台、车载物联终端、盲区预警系统、前后摄像头、油耗传感器、户外高清网络摄像头等',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-594140979.html',strategy:'建议跟进企业侧，主推车载定位设备及配套、企业侧环卫系统',priority:'medium'}
+];
+
+const allData = {collect:collectData,urban:urbanData,sanitation:sanitationData};
 let currentTab = 'collect';
-let dataUpdateTime = '';
-
-// ============ 复制JSON ============
-function copyJSON() {
-  const total = collectData.length + urbanData.length + sanitationData.length;
-  if(total === 0) { alert('当前没有数据，请先导入Excel'); return; }
-  
-  const now = new Date();
-  const dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
-  
-  const jsonObj = {
-    updateTime: dateStr,
-    collect: collectData,
-    urban: urbanData,
-    sanitation: sanitationData
-  };
-  
-  const jsonStr = JSON.stringify(jsonObj, null, 2);
-  
-  // 尝试用 Clipboard API 复制
-  if(navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(jsonStr).then(() => {
-      const btn = document.getElementById('copyJsonBtn');
-      btn.textContent = '✅ 已复制！';
-      setTimeout(() => { btn.textContent = '📋 复制JSON'; }, 2000);
-    }).catch(() => {
-      fallbackCopy(jsonStr);
-    });
-  } else {
-    fallbackCopy(jsonStr);
-  }
-}
-
-function fallbackCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
-  document.body.appendChild(ta);
-  ta.select();
-  try {
-    document.execCommand('copy');
-    const btn = document.getElementById('copyJsonBtn');
-    btn.textContent = '✅ 已复制！';
-    setTimeout(() => { btn.textContent = '📋 复制JSON'; }, 2000);
-  } catch(e) {
-    alert('复制失败，请手动复制以下内容：\n\n' + text.substring(0, 500) + '...');
-  }
-  document.body.removeChild(ta);
-}
-
-// ============ Excel 导入 ============
-function importExcel(input) {
-  const file = input.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, {type:'array'});
-      
-      // 通用字段映射：Excel中文列名 → JSON字段名
-      const collectMap = {'编号':'id','省份':'province','区域':'region','项目名称':'title','采购内容':'content','预算(万元)':'budget','预计采购时间':'time','工作内容':'work','采购单位':'buyer','上一周期中标单位':'winner','公告链接':'link','备注':'remark','优先级':'priority'};
-      const urbanMap = {'编号':'id','地区':'region','产品线':'product','收入类型':'incomeType','项目名称':'title','招标估价(万元)':'budget','发布时间':'time','投标截止':'deadline','招标单位':'buyer','联系电话':'phone','招标代理':'agent','代理电话':'agentPhone','建议跟进':'team','公告链接':'link','优先级':'priority'};
-      const sanitationMap = {'编号':'id','项目名称':'title','发布时间':'time','金额(万元)':'budget','省份':'province','市/区县':'city','智慧环卫建设内容':'content','收入类型':'incomeType','公告链接':'link','建议跟进策略':'strategy','备注':'remark','优先级':'priority'};
-      
-      function mapRow(row, fieldMap, prefix) {
-        const result = {};
-        const usedKeys = new Set();
-        // 遍历Excel每一列，匹配字段
-        for(const [excelCol, val] of Object.entries(row)) {
-          // 清理表头：去掉换行和英文部分，只取中文列名
-          const cleanCol = excelCol.replace(/\n/g,'');
-          // 优先精确匹配中文列名
-          let matched = false;
-          for(const [cnName, jsonKey] of Object.entries(fieldMap)) {
-            if(cleanCol.includes(cnName) || excelCol === cnName || excelCol === jsonKey) {
-              if(!usedKeys.has(jsonKey)) {
-                result[jsonKey] = val;
-                usedKeys.add(jsonKey);
-                matched = true;
-                break;
-              }
-            }
-          }
-          // 如果列名就是JSON字段名本身（旧模板兼容）
-          if(!matched && fieldMap[excelCol] === undefined && !usedKeys.has(excelCol)) {
-            // 直接用英文字段名
-            for(const [cnName, jsonKey] of Object.entries(fieldMap)) {
-              if(excelCol === jsonKey && !usedKeys.has(jsonKey)) {
-                result[jsonKey] = val;
-                usedKeys.add(jsonKey);
-                break;
-              }
-            }
-          }
-        }
-        // 确保id有值
-        if(!result.id) result.id = prefix + (Object.keys(result).length || 1);
-        // budget转为数字
-        if(result.budget !== undefined) result.budget = parseFloat(result.budget) || 0;
-        // time转字符串
-        if(result.time !== undefined) result.time = String(result.time || '');
-        if(result.deadline !== undefined) result.deadline = result.deadline ? String(result.deadline) : '';
-        // 默认priority
-        if(!result.priority) result.priority = 'low';
-        return result;
-      }
-      
-      if(workbook.SheetNames.includes('泛采集产品线')) {
-        const sheet = workbook.Sheets['泛采集产品线'];
-        const json = XLSX.utils.sheet_to_json(sheet);
-        collectData = json.map((row,i) => mapRow(row, collectMap, 'c'+(i+1)));
-      }
-      if(workbook.SheetNames.includes('城管产品线')) {
-        const sheet = workbook.Sheets['城管产品线'];
-        const json = XLSX.utils.sheet_to_json(sheet);
-        urbanData = json.map((row,i) => mapRow(row, urbanMap, 'u'+(i+1)));
-      }
-      if(workbook.SheetNames.includes('环卫产品线')) {
-        const sheet = workbook.Sheets['环卫产品线'];
-        const json = XLSX.utils.sheet_to_json(sheet);
-        sanitationData = json.map((row,i) => mapRow(row, sanitationMap, 's'+(i+1)));
-      }
-      allData = {collect:collectData,urban:urbanData,sanitation:sanitationData};
-      refreshAll();
-      const total = collectData.length + urbanData.length + sanitationData.length;
-      alert('✅ 导入成功！共加载 ' + total + ' 条商情数据\n\n💡 点击右上角「📋 复制JSON」按钮，一键复制后粘贴到GitHub的data.json即可更新线上数据');
-    } catch(err) {
-      alert('❌ 导入失败：' + err.message + '\n\n请确认Excel包含"泛采集产品线""城管产品线""环卫产品线"三个Sheet');
-    }
-  };
-  reader.readAsArrayBuffer(file);
-  input.value = '';
-}
-
-function refreshAll() {
-  document.getElementById('totalCount').textContent = collectData.length + urbanData.length + sanitationData.length;
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    const tab = btn.dataset.tab;
-    const count = tab==='collect' ? collectData.length : tab==='urban' ? urbanData.length : sanitationData.length;
-    btn.querySelector('.tab-count').textContent = count;
-  });
-  renderCards('collect', collectData);
-  renderCards('urban', urbanData);
-  renderCards('sanitation', sanitationData);
-  updateFilterOptions();
-  renderRegionChart();
-  updateHeroStats();
-}
-
-function updateHeroStats() {
-  const collectBudget = collectData.reduce((s,d) => s+d.budget, 0);
-  const urbanBudget = urbanData.reduce((s,d) => s+d.budget, 0);
-  const sanitationBudget = sanitationData.reduce((s,d) => s+d.budget, 0);
-  const stats = document.querySelectorAll('.hero-stat .num');
-  if(stats.length >= 4) {
-    stats[0].innerHTML = (collectData.length + urbanData.length + sanitationData.length);
-    stats[1].innerHTML = collectBudget >= 10000 ? (collectBudget/10000).toFixed(2) + '<span style="font-size:1rem">亿</span>' : collectBudget.toLocaleString() + '<span style="font-size:1rem">万</span>';
-    stats[2].innerHTML = urbanBudget >= 10000 ? (urbanBudget/10000).toFixed(2) + '<span style="font-size:1rem">亿</span>' : urbanBudget.toLocaleString() + '<span style="font-size:1rem">万</span>';
-    stats[3].innerHTML = sanitationBudget >= 10000 ? (sanitationBudget/10000).toFixed(2) + '<span style="font-size:1rem">亿</span>' : sanitationBudget.toLocaleString() + '<span style="font-size:1rem">万</span>';
-  }
-  const allProvinces = new Set();
-  collectData.forEach(d => allProvinces.add(d.province));
-  urbanData.forEach(d => allProvinces.add(d.region.split('-')[0]));
-  sanitationData.forEach(d => allProvinces.add(d.province));
-  document.getElementById('regionCount').textContent = allProvinces.size;
-  const important = [...collectData,...urbanData,...sanitationData].filter(d => d.priority==='high').length;
-  document.getElementById('importantCount').textContent = important;
-}
 
 function renderCards(tab, data) {
   const container = document.getElementById('cards-'+tab);
@@ -610,11 +470,27 @@ function renderCards(tab, data) {
     const card = document.createElement('div');
     card.className = 'card fade-up';
     card.style.animationDelay = (i*0.05)+'s';
-    card.innerHTML = '<div class="card-header"><div class="card-title">'+item.title+'</div><span class="card-tag '+tagClass+'">'+tagName+'</span></div><div class="card-meta"><span class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>'+region+'</span><span class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'+item.time+'</span><span class="priority-badge '+priorityClass[item.priority]+'">'+priorityMap[item.priority]+'</span></div><div class="card-footer"><div class="card-amount">'+(typeof amount==='number'?amount.toLocaleString():amount)+'<span class="unit"> 万元</span></div><span class="card-region" style="color:var(--primary);font-weight:600;font-size:.8rem">查看详情 <span class="card-arrow">→</span></span></div>';
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-title">${item.title}</div>
+        <span class="card-tag ${tagClass}">${tagName}</span>
+      </div>
+      <div class="card-meta">
+        <span class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${region}</span>
+        <span class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${item.time}</span>
+        <span class="priority-badge ${priorityClass[item.priority]}">${priorityMap[item.priority]}</span>
+      </div>
+      <div class="card-footer">
+        <div class="card-amount">${typeof amount==='number'?amount.toLocaleString():amount}<span class="unit"> 万元</span></div>
+        <span class="card-region" style="color:var(--primary);font-weight:600;font-size:.8rem">查看详情 <span class="card-arrow">→</span></span>
+      </div>
+    `;
     card.onclick = () => openDetail(tab, item);
     container.appendChild(card);
   });
-  setTimeout(()=>{container.querySelectorAll('.fade-up').forEach(el=>el.classList.add('visible'));},100);
+  setTimeout(()=>{
+    container.querySelectorAll('.fade-up').forEach(el=>el.classList.add('visible'));
+  },100);
 }
 
 function switchTab(tab) {
@@ -633,7 +509,7 @@ function updateFilterOptions() {
     if(currentTab==='urban') return d.region.split('-')[0];
     return d.province;
   }))].sort();
-  sel.innerHTML = '<option value="">全部省份</option>' + provinces.map(p=>'<option value="'+p+'">'+p+'</option>').join('');
+  sel.innerHTML = '<option value="">全部省份</option>' + provinces.map(p=>`<option value="${p}">${p}</option>`).join('');
 }
 
 function filterCards() {
@@ -665,15 +541,67 @@ function openDetail(tab, item) {
   const tagName = tab==='collect'?'泛采集':tab==='urban'?'城管':'环卫';
   let detailHTML = '';
   if(isCollect) {
-    detailHTML = '<div class="detail-grid"><div class="detail-item"><div class="detail-label">预算金额</div><div class="detail-value amount">'+item.budget+' 万元</div></div><div class="detail-item"><div class="detail-label">预计采购时间</div><div class="detail-value">'+item.time+'</div></div><div class="detail-item"><div class="detail-label">省份</div><div class="detail-value">'+item.province+'</div></div><div class="detail-item"><div class="detail-label">区域</div><div class="detail-value">'+item.region+'</div></div><div class="detail-item full"><div class="detail-label">采购内容</div><div class="detail-value">'+item.content+'</div></div><div class="detail-item full"><div class="detail-label">工作内容</div><div class="detail-value">'+item.work+'</div></div><div class="detail-item full"><div class="detail-label">采购单位</div><div class="detail-value">'+item.buyer+'</div></div><div class="detail-item full"><div class="detail-label">上一周期中标单位</div><div class="detail-value">'+item.winner+'</div></div><div class="detail-item"><div class="detail-label">备注</div><div class="detail-value">'+(item.remark||'—')+'</div></div><div class="detail-item"><div class="detail-label">公告链接</div><div class="detail-value"><a href="'+item.link+'" target="_blank">查看原文 →</a></div></div></div>';
+    detailHTML = `
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">预算金额</div><div class="detail-value amount">${item.budget} 万元</div></div>
+        <div class="detail-item"><div class="detail-label">预计采购时间</div><div class="detail-value">${item.time}</div></div>
+        <div class="detail-item"><div class="detail-label">省份</div><div class="detail-value">${item.province}</div></div>
+        <div class="detail-item"><div class="detail-label">区域</div><div class="detail-value">${item.region}</div></div>
+        <div class="detail-item full"><div class="detail-label">采购内容</div><div class="detail-value">${item.content}</div></div>
+        <div class="detail-item full"><div class="detail-label">工作内容</div><div class="detail-value">${item.work}</div></div>
+        <div class="detail-item full"><div class="detail-label">采购单位</div><div class="detail-value">${item.buyer}</div></div>
+        <div class="detail-item full"><div class="detail-label">上一周期中标单位</div><div class="detail-value">${item.winner}</div></div>
+        <div class="detail-item"><div class="detail-label">备注</div><div class="detail-value">${item.remark}</div></div>
+        <div class="detail-item"><div class="detail-label">公告链接</div><div class="detail-value"><a href="${item.link}" target="_blank">查看原文 →</a></div></div>
+      </div>`;
   } else if(isUrban) {
-    detailHTML = '<div class="detail-grid"><div class="detail-item"><div class="detail-label">招标估价</div><div class="detail-value amount">'+item.budget+' 万元</div></div><div class="detail-item"><div class="detail-label">发布时间</div><div class="detail-value">'+item.time+'</div></div><div class="detail-item"><div class="detail-label">地区</div><div class="detail-value">'+item.region+'</div></div><div class="detail-item"><div class="detail-label">产品线</div><div class="detail-value">'+item.product+'</div></div><div class="detail-item full"><div class="detail-label">收入类型</div><div class="detail-value">'+item.incomeType+'</div></div><div class="detail-item full"><div class="detail-label">招标单位</div><div class="detail-value">'+item.buyer+'</div></div>'+(item.phone?'<div class="detail-item"><div class="detail-label">联系电话</div><div class="detail-value">'+item.phone+'</div></div>':'')+(item.agent?'<div class="detail-item"><div class="detail-label">招标代理</div><div class="detail-value">'+item.agent+'</div></div>':'')+(item.agentPhone?'<div class="detail-item"><div class="detail-label">代理电话</div><div class="detail-value">'+item.agentPhone+'</div></div>':'')+'<div class="detail-item"><div class="detail-label">投标截止</div><div class="detail-value">'+(item.deadline||'待定')+'</div></div>'+(item.team?'<div class="detail-item"><div class="detail-label">建议跟进</div><div class="detail-value">'+item.team+'</div></div>':'')+'<div class="detail-item"><div class="detail-label">公告链接</div><div class="detail-value"><a href="'+item.link+'" target="_blank">查看原文 →</a></div></div></div>';
+    detailHTML = `
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">招标估价</div><div class="detail-value amount">${item.budget} 万元</div></div>
+        <div class="detail-item"><div class="detail-label">发布时间</div><div class="detail-value">${item.time}</div></div>
+        <div class="detail-item"><div class="detail-label">地区</div><div class="detail-value">${item.region}</div></div>
+        <div class="detail-item"><div class="detail-label">产品线</div><div class="detail-value">${item.product}</div></div>
+        <div class="detail-item full"><div class="detail-label">收入类型</div><div class="detail-value">${item.incomeType}</div></div>
+        <div class="detail-item full"><div class="detail-label">招标单位</div><div class="detail-value">${item.buyer}</div></div>
+        ${item.phone?`<div class="detail-item"><div class="detail-label">联系电话</div><div class="detail-value">${item.phone}</div></div>`:''}
+        ${item.agent?`<div class="detail-item"><div class="detail-label">招标代理</div><div class="detail-value">${item.agent}</div></div>`:''}
+        ${item.agentPhone?`<div class="detail-item"><div class="detail-label">代理电话</div><div class="detail-value">${item.agentPhone}</div></div>`:''}
+        <div class="detail-item"><div class="detail-label">投标截止</div><div class="detail-value">${item.deadline||'待定'}</div></div>
+        ${item.team?`<div class="detail-item"><div class="detail-label">建议跟进</div><div class="detail-value">${item.team}</div></div>`:''}
+        <div class="detail-item"><div class="detail-label">公告链接</div><div class="detail-value"><a href="${item.link}" target="_blank">查看原文 →</a></div></div>
+      </div>`;
   } else {
-    detailHTML = '<div class="detail-grid"><div class="detail-item"><div class="detail-label">金额</div><div class="detail-value amount">'+item.budget+' 万元</div></div><div class="detail-item"><div class="detail-label">发布时间</div><div class="detail-value">'+item.time+'</div></div><div class="detail-item"><div class="detail-label">省份</div><div class="detail-value">'+item.province+'</div></div><div class="detail-item"><div class="detail-label">市/区县</div><div class="detail-value">'+item.city+'</div></div><div class="detail-item"><div class="detail-label">收入类型</div><div class="detail-value">'+item.incomeType+'</div></div><div class="detail-item"><div class="detail-label">备注</div><div class="detail-value">'+(item.remark||'—')+'</div></div><div class="detail-item full"><div class="detail-label">智慧环卫建设内容</div><div class="detail-value">'+item.content+'</div></div><div class="detail-item full"><div class="detail-label">公告链接</div><div class="detail-value"><a href="'+item.link+'" target="_blank">查看原文 →</a></div></div></div>'+(item.strategy?'<div class="strategy-box"><div class="stitle">🎯 建议跟进策略</div><div class="scontent">'+item.strategy+'</div></div>':'');
+    detailHTML = `
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">金额</div><div class="detail-value amount">${item.budget} 万元</div></div>
+        <div class="detail-item"><div class="detail-label">发布时间</div><div class="detail-value">${item.time}</div></div>
+        <div class="detail-item"><div class="detail-label">省份</div><div class="detail-value">${item.province}</div></div>
+        <div class="detail-item"><div class="detail-label">市/区县</div><div class="detail-value">${item.city}</div></div>
+        <div class="detail-item"><div class="detail-label">收入类型</div><div class="detail-value">${item.incomeType}</div></div>
+        <div class="detail-item"><div class="detail-label">备注</div><div class="detail-value">${item.remark||'—'}</div></div>
+        <div class="detail-item full"><div class="detail-label">智慧环卫建设内容</div><div class="detail-value">${item.content}</div></div>
+        <div class="detail-item full"><div class="detail-label">公告链接</div><div class="detail-value"><a href="${item.link}" target="_blank">查看原文 →</a></div></div>
+      </div>
+      <div class="strategy-box">
+        <div class="stitle">🎯 建议跟进策略</div>
+        <div class="scontent">${item.strategy}</div>
+      </div>`;
   }
   const priorityMap = {high:'重点跟进',medium:'一般跟进',low:'常规关注'};
   const priorityClass = {high:'priority-high',medium:'priority-medium',low:'priority-low'};
-  modal.innerHTML = '<div class="modal-header"><div><div class="modal-title">'+item.title+'</div><div class="modal-subtitle"><span class="card-tag '+tagClass+'" style="margin-right:8px">'+tagName+'</span><span class="priority-badge '+priorityClass[item.priority]+'">'+priorityMap[item.priority]+'</span></div></div><button class="modal-close" onclick="closeModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div><div class="modal-body">'+detailHTML+'</div>';
+  modal.innerHTML = `
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">${item.title}</div>
+        <div class="modal-subtitle">
+          <span class="card-tag ${tagClass}" style="margin-right:8px">${tagName}</span>
+          <span class="priority-badge ${priorityClass[item.priority]}">${priorityMap[item.priority]}</span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    </div>
+    <div class="modal-body">${detailHTML}</div>
+  `;
   document.getElementById('modalOverlay').classList.add('show');
   document.body.style.overflow = 'hidden';
 }
@@ -690,41 +618,40 @@ function renderRegionChart() {
   allData.urban.forEach(d => { const p = d.region.split('-')[0]; provinces[p] = (provinces[p]||0) + d.budget; });
   allData.sanitation.forEach(d => { provinces[d.province] = (provinces[d.province]||0) + d.budget; });
   const sorted = Object.entries(provinces).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  if(sorted.length === 0) return;
   const max = sorted[0][1];
   const colors = ['#4F46E5','#0891B2','#7C3AED','#059669','#D97706','#DB2777','#DC2626','#6366F1'];
   const chart = document.getElementById('regionChart');
-  chart.innerHTML = sorted.map(([prov,val],i) => '<div class="bar-row"><div class="bar-label">'+prov+'</div><div class="bar-track"><div class="bar-fill" style="width:'+Math.max(val/max*100,8)+'%;background:'+colors[i]+'">'+(val>10000?(val/10000).toFixed(1)+'亿':val.toFixed(0)+'万')+'</div></div></div>').join('');
+  chart.innerHTML = sorted.map(([prov,val],i) => `
+    <div class="bar-row">
+      <div class="bar-label">${prov}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${Math.max(val/max*100,8)}%;background:${colors[i]}">${val>10000?(val/10000).toFixed(1)+'亿':val.toFixed(0)+'万'}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
 function exportReport() {
   alert('报告导出功能：生成PDF商情分析报告（含三大产线详情及专项分析）');
 }
 
-async function init() {
-  try {
-    const resp = await fetch('data.json');
-    if(resp.ok) {
-      const json = await resp.json();
-      collectData = json.collect || [];
-      urbanData = json.urban || [];
-      sanitationData = json.sanitation || [];
-      dataUpdateTime = json.updateTime || '';
-      allData = {collect:collectData,urban:urbanData,sanitation:sanitationData};
-      if(dataUpdateTime) {
-        const badge = document.querySelector('.hero-badge');
-        if(badge) badge.innerHTML = '<span class="dot"></span> 数据更新于 ' + dataUpdateTime;
-      }
-    }
-  } catch(e) { console.log('data.json 加载失败，使用空数据'); }
+function init() {
   renderCards('collect', collectData);
   renderCards('urban', urbanData);
   renderCards('sanitation', sanitationData);
   updateFilterOptions();
   renderRegionChart();
-  updateHeroStats();
-  const observer = new IntersectionObserver(entries => { entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); }); }, {threshold:0.1});
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, {threshold:0.1});
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  const allProvinces = new Set();
+  collectData.forEach(d => allProvinces.add(d.province));
+  urbanData.forEach(d => allProvinces.add(d.region.split('-')[0]));
+  sanitationData.forEach(d => allProvinces.add(d.province));
+  document.getElementById('regionCount').textContent = allProvinces.size;
   document.querySelectorAll('.nav-links a').forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault();
@@ -736,11 +663,6 @@ async function init() {
     });
   });
   document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
-  
-  // 后台管理入口：网址加 ?admin 才显示管理按钮
-  if(window.location.search.includes('admin')) {
-    document.getElementById('adminButtons').style.display = 'inline-flex';
-  }
 }
 
 init();
