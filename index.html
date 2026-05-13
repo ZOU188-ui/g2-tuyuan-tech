@@ -223,6 +223,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <div class="nav-actions">
       <button class="btn btn-primary" onclick="document.getElementById('excelFileInput').click()">📥 导入Excel</button>
       <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display:none" onchange="importExcel(this)">
+      <button class="btn btn-outline" onclick="copyJSON()" id="copyJsonBtn">📋 复制JSON</button>
       <button class="btn btn-outline" onclick="exportReport()">导出报告</button>
     </div>
   </div>
@@ -425,7 +426,55 @@ let allData = {collect:collectData,urban:urbanData,sanitation:sanitationData};
 let currentTab = 'collect';
 let dataUpdateTime = '';
 
-// Excel 导入
+// ============ 复制JSON ============
+function copyJSON() {
+  const total = collectData.length + urbanData.length + sanitationData.length;
+  if(total === 0) { alert('当前没有数据，请先导入Excel'); return; }
+  
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  
+  const jsonObj = {
+    updateTime: dateStr,
+    collect: collectData,
+    urban: urbanData,
+    sanitation: sanitationData
+  };
+  
+  const jsonStr = JSON.stringify(jsonObj, null, 2);
+  
+  // 尝试用 Clipboard API 复制
+  if(navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(jsonStr).then(() => {
+      const btn = document.getElementById('copyJsonBtn');
+      btn.textContent = '✅ 已复制！';
+      setTimeout(() => { btn.textContent = '📋 复制JSON'; }, 2000);
+    }).catch(() => {
+      fallbackCopy(jsonStr);
+    });
+  } else {
+    fallbackCopy(jsonStr);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    const btn = document.getElementById('copyJsonBtn');
+    btn.textContent = '✅ 已复制！';
+    setTimeout(() => { btn.textContent = '📋 复制JSON'; }, 2000);
+  } catch(e) {
+    alert('复制失败，请手动复制以下内容：\n\n' + text.substring(0, 500) + '...');
+  }
+  document.body.removeChild(ta);
+}
+
+// ============ Excel 导入 ============
 function importExcel(input) {
   const file = input.files[0];
   if(!file) return;
@@ -434,70 +483,76 @@ function importExcel(input) {
     try {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, {type:'array'});
+      
+      // 通用字段映射：Excel中文列名 → JSON字段名
+      const collectMap = {'编号':'id','省份':'province','区域':'region','项目名称':'title','采购内容':'content','预算(万元)':'budget','预计采购时间':'time','工作内容':'work','采购单位':'buyer','上一周期中标单位':'winner','公告链接':'link','备注':'remark','优先级':'priority'};
+      const urbanMap = {'编号':'id','地区':'region','产品线':'product','收入类型':'incomeType','项目名称':'title','招标估价(万元)':'budget','发布时间':'time','投标截止':'deadline','招标单位':'buyer','联系电话':'phone','招标代理':'agent','代理电话':'agentPhone','建议跟进':'team','公告链接':'link','优先级':'priority'};
+      const sanitationMap = {'编号':'id','项目名称':'title','发布时间':'time','金额(万元)':'budget','省份':'province','市/区县':'city','智慧环卫建设内容':'content','收入类型':'incomeType','公告链接':'link','建议跟进策略':'strategy','备注':'remark','优先级':'priority'};
+      
+      function mapRow(row, fieldMap, prefix) {
+        const result = {};
+        const usedKeys = new Set();
+        // 遍历Excel每一列，匹配字段
+        for(const [excelCol, val] of Object.entries(row)) {
+          // 清理表头：去掉换行和英文部分，只取中文列名
+          const cleanCol = excelCol.replace(/\n/g,'');
+          // 优先精确匹配中文列名
+          let matched = false;
+          for(const [cnName, jsonKey] of Object.entries(fieldMap)) {
+            if(cleanCol.includes(cnName) || excelCol === cnName || excelCol === jsonKey) {
+              if(!usedKeys.has(jsonKey)) {
+                result[jsonKey] = val;
+                usedKeys.add(jsonKey);
+                matched = true;
+                break;
+              }
+            }
+          }
+          // 如果列名就是JSON字段名本身（旧模板兼容）
+          if(!matched && fieldMap[excelCol] === undefined && !usedKeys.has(excelCol)) {
+            // 直接用英文字段名
+            for(const [cnName, jsonKey] of Object.entries(fieldMap)) {
+              if(excelCol === jsonKey && !usedKeys.has(jsonKey)) {
+                result[jsonKey] = val;
+                usedKeys.add(jsonKey);
+                break;
+              }
+            }
+          }
+        }
+        // 确保id有值
+        if(!result.id) result.id = prefix + (Object.keys(result).length || 1);
+        // budget转为数字
+        if(result.budget !== undefined) result.budget = parseFloat(result.budget) || 0;
+        // time转字符串
+        if(result.time !== undefined) result.time = String(result.time || '');
+        if(result.deadline !== undefined) result.deadline = result.deadline ? String(result.deadline) : '';
+        // 默认priority
+        if(!result.priority) result.priority = 'low';
+        return result;
+      }
+      
       if(workbook.SheetNames.includes('泛采集产品线')) {
         const sheet = workbook.Sheets['泛采集产品线'];
         const json = XLSX.utils.sheet_to_json(sheet);
-        collectData = json.map((row,i) => ({
-          id: row['编号'] || ('c'+(i+1)),
-          province: row['省份'] || '',
-          region: row['区域'] || '',
-          title: row['项目名称'] || '',
-          content: row['采购内容'] || '',
-          budget: parseFloat(row['预算(万元)']) || 0,
-          time: String(row['预计采购时间'] || ''),
-          work: row['工作内容'] || '',
-          buyer: row['采购单位'] || '',
-          winner: row['上一周期中标单位'] || '',
-          link: row['公告链接'] || '',
-          remark: row['备注'] || '',
-          priority: row['优先级'] || 'low'
-        }));
+        collectData = json.map((row,i) => mapRow(row, collectMap, 'c'+(i+1)));
       }
       if(workbook.SheetNames.includes('城管产品线')) {
         const sheet = workbook.Sheets['城管产品线'];
         const json = XLSX.utils.sheet_to_json(sheet);
-        urbanData = json.map((row,i) => ({
-          id: row['编号'] || ('u'+(i+1)),
-          region: row['地区'] || '',
-          product: row['产品线'] || '',
-          incomeType: row['收入类型'] || '',
-          title: row['项目名称'] || '',
-          budget: parseFloat(row['招标估价(万元)']) || 0,
-          time: String(row['发布时间'] || ''),
-          deadline: row['投标截止'] ? String(row['投标截止']) : '',
-          buyer: row['招标单位'] || '',
-          phone: row['联系电话'] || '',
-          agent: row['招标代理'] || '',
-          agentPhone: row['代理电话'] || '',
-          team: row['建议跟进'] || '',
-          link: row['公告链接'] || '',
-          priority: row['优先级'] || 'low'
-        }));
+        urbanData = json.map((row,i) => mapRow(row, urbanMap, 'u'+(i+1)));
       }
       if(workbook.SheetNames.includes('环卫产品线')) {
         const sheet = workbook.Sheets['环卫产品线'];
         const json = XLSX.utils.sheet_to_json(sheet);
-        sanitationData = json.map((row,i) => ({
-          id: row['编号'] || ('s'+(i+1)),
-          title: row['项目名称'] || '',
-          time: String(row['发布时间'] || ''),
-          budget: parseFloat(row['金额(万元)']) || 0,
-          province: row['省份'] || '',
-          city: row['市/区县'] || '',
-          content: row['智慧环卫建设内容'] || '',
-          incomeType: row['收入类型'] || '',
-          link: row['公告链接'] || '',
-          strategy: row['建议跟进策略'] || '',
-          remark: row['备注'] || '',
-          priority: row['优先级'] || 'low'
-        }));
+        sanitationData = json.map((row,i) => mapRow(row, sanitationMap, 's'+(i+1)));
       }
       allData = {collect:collectData,urban:urbanData,sanitation:sanitationData};
       refreshAll();
       const total = collectData.length + urbanData.length + sanitationData.length;
-      alert('✅ 导入成功！共加载 ' + total + ' 条商情数据');
+      alert('✅ 导入成功！共加载 ' + total + ' 条商情数据\n\n💡 点击右上角「📋 复制JSON」按钮，一键复制后粘贴到GitHub的data.json即可更新线上数据');
     } catch(err) {
-      alert('❌ 导入失败：' + err.message);
+      alert('❌ 导入失败：' + err.message + '\n\n请确认Excel包含"泛采集产品线""城管产品线""环卫产品线"三个Sheet');
     }
   };
   reader.readAsArrayBuffer(file);
