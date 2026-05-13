@@ -229,11 +229,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <!-- Hero -->
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-badge"><span class="dot"></span> 数据实时更新 · 2026年5月</div>
+    <div class="hero-badge"><span class="dot"></span> 数据实时更新 · <span id="updateTimeBadge">加载中</span></div>
     <h1>G2 图元科技</h1>
     <div class="hero-subtitle">TUYUAN TECH</div>
     <p>三大产线商情智能分析平台 · 覆盖泛采集、城管、环卫核心业务，智能洞察行业动态与市场机遇</p>
-    <div class="hero-stats">
+    <div class="hero-stats" id="heroStats">
       <div class="hero-stat"><div class="num">30</div><div class="label">重点商情项目</div></div>
       <div class="hero-stat"><div class="num">5,526<span style="font-size:1rem">万</span></div><div class="label">泛采集线预算</div></div>
       <div class="hero-stat"><div class="num">4,953<span style="font-size:1rem">万</span></div><div class="label">城管线估价</div></div>
@@ -330,10 +330,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="analysis-card fade-up">
         <h3><span class="aicon ai1">📈</span>行业动态</h3>
         <ul class="trend-list">
-          <li><span class="trend-dot td1"></span><span><strong>智慧城管加速升级：</strong>全国数字城管信息采集项目持续放量，多地推行"人工+AI"双驱动模式，智能巡查与无人机巡检成为标配，年预算规模达千万级别。</span></li>
-          <li><span class="trend-dot td2"></span><span><strong>城市生命线爆发增长：</strong>城市生命线工程成为新增长极，唐山870万、日喀则3082万、峡江450万等项目密集释放，涵盖燃气、桥梁、供水等全场景监测。</span></li>
-          <li><span class="trend-dot td3"></span><span><strong>智慧环卫规模化推进：</strong>茂名13.3亿、汕尾2.66亿大型项目落地，专项债支持推动环卫信息化从单点建设走向城市级平台整合。</span></li>
-          <li><span class="trend-dot td4"></span><span><strong>信创适配成新需求：</strong>潍坊、南京等地明确要求信创适配改造，国产化替代在城管环卫领域进入实质推进阶段。</span></li>
+          <li><span class="trend-dot td1"></span><span><strong>智慧城管加速升级：</strong>全国数字城管信息采集项目持续放量，50+项目覆盖全国，多地推行"人工+AI"双驱动模式，智能巡查与无人机巡检成为标配，南京8100万、长沙西北片区3015万为核心大额项目。</span></li>
+          <li><span class="trend-dot td2"></span><span><strong>城市生命线爆发增长：</strong>城市生命线工程成为城管线新增长极，日喀则3082万、汕尾2.66亿、唐山870万等项目密集释放，涵盖燃气、桥梁、供水等全场景监测。</span></li>
+          <li><span class="trend-dot td3"></span><span><strong>智慧环卫规模化推进：</strong>茂名13.3亿、汕尾2.66亿、银川1.8亿等大型项目落地，90+个项目覆盖全国，专项债支持推动环卫信息化从单点建设走向城市级平台整合。</span></li>
+          <li><span class="trend-dot td4"></span><span><strong>信创适配成新需求：</strong>潍坊、坪山区等地明确要求信创适配改造，国产化替代在城管环卫领域进入实质推进阶段。</span></li>
           <li><span class="trend-dot td5"></span><span><strong>建筑垃圾监管强化：</strong>南京江宁区245.8万建筑垃圾项目、广州156.2万余泥渣土项目，渣土运输与建筑垃圾全流程监管需求上升。</span></li>
         </ul>
       </div>
@@ -346,13 +346,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="analysis-card fade-up stagger-2">
         <h3><span class="aicon ai3">💡</span>市场机遇洞察</h3>
         <div class="insight-box">
-          <strong>运管服平台建设窗口期：</strong>城管产品线中运管服相关项目占比60%，定制化开发需求旺盛（升级优化+新建项目），深圳、南宁等地已启动招标，建议重点关注广东、广西区域。
+          <strong>运管服平台建设窗口期：</strong>城管产品线中运管服相关项目占比较大，定制化开发需求旺盛（升级优化+新建项目），深圳、南宁等地已启动招标，建议重点关注广东、广西区域。
         </div>
         <div class="insight-box">
-          <strong>环卫信息化渗透率提升：</strong>10个环卫项目中8个明确要求智慧环卫系统/平台，从传统保洁服务向"服务+信息化"打包转型趋势明显，智慧环卫系统、车辆管理、垃圾收费系统为主推方向。
+          <strong>环卫信息化渗透率提升：</strong>90个环卫项目中大量项目明确要求智慧环卫系统/平台，从传统保洁服务向"服务+信息化"打包转型趋势明显，智慧环卫系统、车辆管理、垃圾收费系统为主推方向。
         </div>
         <div class="insight-box">
-          <strong>泛采集服务向智能化演进：</strong>多地将"人工+AI智能""无人机巡检"写入采购需求，石家庄721万项目明确要求AI智能车载巡查，信息采集服务从劳动密集向技术密集转型。
+          <strong>泛采集服务向智能化演进：</strong>50+项目中多地将"人工+AI智能""无人机巡检"写入采购需求，长沙多个千万级项目、石家庄721万项目明确要求AI智能车载巡查，信息采集服务从劳动密集向技术密集转型。
         </div>
         <div class="insight-box">
           <strong>专项债驱动的超大型项目：</strong>茂名13.3亿、汕尾2.66亿项目由专项债支撑，此类项目通常涵盖多子系统，可整体切入或分标段参与，环卫系统为关键入口。
@@ -362,9 +362,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="analysis-card fade-up stagger-3">
         <h3><span class="aicon ai4">🎯</span>竞争态势与建议</h3>
         <ul class="trend-list">
-          <li><span class="trend-dot td1"></span><span><strong>现有竞争格局：</strong>政通智慧城市、北明软件在泛采集领域占据先发优势；中国移动等运营商切入智慧城管系统建设；传统物业/人力公司（恒福、渡口等）主导线下采集服务。</span></li>
-          <li><span class="trend-dot td2"></span><span><strong>差异化切入点：</strong>依托"平台+AI"能力，以智能巡查、信创适配、运管服平台为核心差异化优势，避开纯人力服务竞争。</span></li>
-          <li><span class="trend-dot td3"></span><span><strong>重点跟进策略：</strong>承德945万、徐州2520万、石家庄721万为核心大额项目；茂名、汕尾为超大型标杆机会；唐山城市生命线870万为新兴方向突破点。</span></li>
+          <li><span class="trend-dot td1"></span><span><strong>现有竞争格局：</strong>政通智慧城市、北明软件在泛采集领域占据先发优势；中国移动等运营商切入智慧城管系统建设；传统物业/人力公司主导线下采集服务；伏泰信息、纳故环保在环卫信息化领域竞争力强。</span></li>
+          <li><span class="trend-dot td2"></span><span><strong>差异化切入点：</strong>依托"平台+AI"能力，以智能巡查、信创适配、运管服平台为核心差异化优势，避开纯人力服务竞争。图元环卫一体化管理信息系统等软著可形成准入壁垒。</span></li>
+          <li><span class="trend-dot td3"></span><span><strong>重点跟进策略：</strong>南京8100万、长沙西北片区3015万、徐州2520万为核心大额项目；茂名、汕尾为超大型标杆机会；唐山城市生命线870万为新兴方向突破点。</span></li>
           <li><span class="trend-dot td4"></span><span><strong>时间窗口：</strong>5-6月为集中采购期，建议在4月底前完成前期对接，确保入围关键项目招标。</span></li>
           <li><span class="trend-dot td5"></span><span><strong>合作伙伴策略：</strong>与地方设计院、运营商建立联合体，提升大型项目竞争力；在企业侧项目中与物业/保洁公司形成互补合作。</span></li>
         </ul>
@@ -372,31 +372,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
       <div class="analysis-card analysis-full fade-up">
         <h3><span class="aicon ai2">📊</span>三大产线金额对比分析</h3>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:16px">
-          <div style="text-align:center;padding:24px;background:rgba(79,70,229,.04);border-radius:var(--radius);border:1px solid rgba(79,70,229,.1)">
-            <div style="font-size:.8rem;color:var(--text3);margin-bottom:8px">泛采集产品线</div>
-            <div style="font-size:2rem;font-weight:800;color:var(--primary)">5,526<span style="font-size:.9rem">万</span></div>
-            <div style="font-size:.75rem;color:var(--text3);margin-top:4px">10个项目 · 均值553万</div>
-            <div style="margin-top:12px;display:flex;gap:4px;justify-content:center">
-              <span class="priority-badge priority-high">3个核心大额</span>
-            </div>
-          </div>
-          <div style="text-align:center;padding:24px;background:rgba(8,145,178,.04);border-radius:var(--radius);border:1px solid rgba(8,145,178,.1)">
-            <div style="font-size:.8rem;color:var(--text3);margin-bottom:8px">城管产品线</div>
-            <div style="font-size:2rem;font-weight:800;color:var(--accent)">5,185<span style="font-size:.9rem">万</span></div>
-            <div style="font-size:.75rem;color:var(--text3);margin-top:4px">10个项目 · 均值519万</div>
-            <div style="margin-top:12px;display:flex;gap:4px;justify-content:center">
-              <span class="priority-badge priority-high">2个千万级</span>
-            </div>
-          </div>
-          <div style="text-align:center;padding:24px;background:rgba(124,58,237,.04);border-radius:var(--radius);border:1px solid rgba(124,58,237,.1)">
-            <div style="font-size:.8rem;color:var(--text3);margin-bottom:8px">环卫产品线</div>
-            <div style="font-size:2rem;font-weight:800;color:var(--accent2)">14.7<span style="font-size:.9rem">亿</span></div>
-            <div style="font-size:.75rem;color:var(--text3);margin-top:4px">10个项目 · 均值1.47亿</div>
-            <div style="margin-top:12px;display:flex;gap:4px;justify-content:center">
-              <span class="priority-badge priority-high">2个亿级</span>
-            </div>
-          </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:16px" id="productLineCompare">
+          <div style="text-align:center;padding:24px;color:var(--text3)">加载中...</div>
+        </div>
         </div>
       </div>
     </div>
@@ -414,47 +392,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 
 <script>
-const collectData = [
-  {id:'c1',province:'山东省',region:'青岛市市北区',title:'市北区数字城管信息采集项目',content:'信息采集、市容巡查',budget:150.5,time:'2026年6月',work:'数字城管信息采集服务',buyer:'青岛市市北区社会治理推进中心',winner:'青岛恒福人力资源管理有限公司',link:'https://ggzy.qingdao.gov.cn/c/TradeDetals-ZtbShow/153073-5070-1-2-0/d8aea15a-47bb-4434-ad03-b747c0e7931e-B03CE5B6FC1D2D3C2D5FCEBC39AA2406.html',remark:'服务期1年',priority:'low'},
-  {id:'c2',province:'河北省',region:'承德市',title:'承德市数字化城市管理信息采集服务',content:'城市管理信息采集',budget:945,time:'2026年5月',work:'120平方公里网格化管理，事部件信息采集、核实、核查',buyer:'承德市城市管理综合行政执法局',winner:'承德鸿赋企业管理咨询有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/zbgg/202505/t20250521_24632273.htm',remark:'服务期1年,大额项目',priority:'high'},
-  {id:'c3',province:'江苏省',region:'徐州市',title:'徐州市城市管理信息采集市场化服务项目',content:'人工+智能信息采集',budget:2520,time:'2026年5月',work:'城市管理信息采集市场化服务',buyer:'徐州市城市管理综合行政执法局',winner:'政通智慧城市运营科技有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/zbgg/202501/t20250102_24005472.htm',remark:'3年期,年均840万,核心大额',priority:'high'},
-  {id:'c4',province:'河北省',region:'石家庄市',title:'石家庄市数字城管信息采集服务外包项目',content:'人工+AI智能车载巡查',budget:721,time:'2026年5月',work:'数字城管信息采集服务外包',buyer:'石家庄市市容管理考评中心',winner:'北明软件有限公司',link:'https://www.sjzsggzyjyzx.org.cn/jyxxzczb/164861.jhtml',remark:'3年期,年均240万,核心大额',priority:'high'},
-  {id:'c5',province:'江苏省',region:'无锡市新吴区',title:'新吴区2026-2028年城市精细化管理"第三方"信息采集服务项目',content:'第三方信息采集、市容市政巡查',budget:440,time:'招标中,2026年5月18日开标',work:'城市精细化管理第三方信息采集服务',buyer:'无锡高新区（新吴区）城市管理局',winner:'无锡润元智能物业管理有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202604/t20260420_26429381.htm',remark:'2年期,年均220万,已发公告',priority:'medium'},
-  {id:'c6',province:'四川省',region:'攀枝花市东区',title:'2026年数字化城市管理信息系统（"城市啄木鸟"行动）',content:'市容巡查、城管采集',budget:62.7,time:'2026年6月',work:'全域网格日常巡查、信息采集上报、城市啄木鸟随手拍核查处置',buyer:'攀枝花市东区综合行政执法局',winner:'攀枝花市渡口城市管理服务有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202404/t20240429_21969499.htm',remark:'服务期1年',priority:'low'},
-  {id:'c7',province:'山东省',region:'青岛市即墨区',title:'智慧城管执法巡查',content:'违建巡查作业、无人机巡检',budget:113,time:'已发中标公告',work:'200平方公里无人机违建巡查、在建工地巡检,分辨率优于0.1米',buyer:'青岛市即墨区综合行政执法局',winner:'山东瑞智飞控科技有限公司',link:'https://www.ccgp.gov.cn/cggg/dfgg/cjgg/202504/t20250414_24435708.htm',remark:'服务期1年',priority:'medium'},
-  {id:'c8',province:'山东省',region:'日照市',title:'日照市城市管理信息采集项目',content:'信息采集服务',budget:300,time:'2026年5月',work:'全域城管信息采集、网格市容巡查、案件核查闭环',buyer:'日照市城市管理局机关',winner:'A包:数字日照有限公司 B包:日照瑞岚城市环境服务有限责任公司',link:'http://ggzyjy.rizhao.gov.cn/rzwz/jyxx/004002/004002004/20250730/72e8a9be-9104-4cf8-96d9-0b7c94af4bed.html',remark:'服务期1年',priority:'medium'},
-  {id:'c9',province:'浙江省',region:'温州市乐清市',title:'2026年度乐清市智慧城管信息采集与坐席人员服务外包项目',content:'智慧城管信息采集+坐席人员服务外包',budget:99,time:'2026年6月',work:'智慧城管信息采集与坐席人员服务外包',buyer:'乐清市综合行政执法局',winner:'天津顺畅智慧城市运营管理有限责任公司',link:'https://ggzy.zj.gov.cn/jyxxgk/002002/002002002/20251126/e6146353-65bf-4e6f-b0d5-1dd5c5f620c1.html',remark:'服务期1年',priority:'low'},
-  {id:'c10',province:'湖北省',region:'随州市曾都区',title:'2026年智慧城管建设项目',content:'人工巡查+智能抓拍+空中巡查',budget:70,time:'2026年5月',work:'智慧城管建设，人工巡查+智能抓拍+空中巡查',buyer:'随州市曾都区城市管理指挥中心',winner:'中国移动湖北公司随州分公司',link:'http://www.ccgp.gov.cn/cggg/dfgg/zbgg/202509/t20250910_25324752.htm',remark:'服务期1年',priority:'low'}
-];
-
-const urbanData = [
-  {id:'u1',region:'广东-深圳-坪山区',product:'运管服',incomeType:'项目开发-定制化开发-升级优化',title:'坪山区运管服平台升级优化',budget:30,time:'2026/5/12',deadline:'2026/5/15',buyer:'深圳市坪山区城市管理和综合执法局',phone:'0755-89381024',team:'广东区',link:'https://www.qianlima.com/bid-596396440.html',priority:'low'},
-  {id:'u2',region:'广西-南宁-青秀区',product:'运管服',incomeType:'项目开发-定制化开发-升级优化',title:'南宁市智慧城管信息中心运管服升级优化',budget:29.6,time:'2026/5/12',deadline:'2026/5/15',buyer:'南宁市智慧城管信息中心',phone:'0771-5827629',team:'合-四川区',agent:'广西邕政采购代理有限公司',agentPhone:'0771-2225338',link:'https://www.qianlima.com/bid-596206014.html',priority:'low'},
-  {id:'u3',region:'江苏-南京-江宁区',product:'建筑垃圾',incomeType:'项目开发-定制化开发-新建项目',title:'南京市江宁区建筑垃圾管理系统新建',budget:245.8,time:'2026/5/12',deadline:'2026/6/5',buyer:'南京市江宁区城市管理局（本级）',phone:'025-52190456',agent:'南京市公共资源交易中心江宁分中心',agentPhone:'025-69613983',team:'湖南区',link:'https://www.qianlima.com/bid-596319539.html',priority:'high'},
-  {id:'u4',region:'广东-广州',product:'建筑垃圾',incomeType:'专业服务-运维服务',title:'广州市余泥渣土管理处运维服务',budget:156.2,time:'2026/5/12',deadline:'—',buyer:'广州市余泥渣土管理处',team:'广东区',link:'https://www.qianlima.com/bid-596380086.html',priority:'medium'},
-  {id:'u5',region:'河北-唐山-路北区',product:'城市生命线',incomeType:'项目开发-定制化开发-升级优化',title:'唐山市路北区城市生命线升级优化',budget:870,time:'2026/5/12',deadline:'—',buyer:'唐山市路北区住房和城乡建设局',team:'合-山西区',link:'https://www.qianlima.com/bid-596230511.html',priority:'high'},
-  {id:'u6',region:'西藏-日喀则-桑珠孜区',product:'城市生命线',incomeType:'项目开发-定制化开发-新建项目',title:'日喀则市城市生命线新建项目',budget:3082.3,time:'2026/5/7',deadline:'—',buyer:'日喀则市住房和城乡建设局',link:'https://www.qianlima.com/bid-594761140.html',priority:'high'},
-  {id:'u7',region:'江西-吉安-峡江县',product:'城市生命线',incomeType:'项目开发-定制化开发-新建项目',title:'峡江县城市生命线新建项目',budget:450,time:'2026/5/7',deadline:'—',buyer:'峡江县市容管理服务中心',link:'https://www.qianlima.com/bid-594953552.html',priority:'medium'},
-  {id:'u8',region:'河南-商丘-睢阳区',product:'城市生命线',incomeType:'项目开发-定制化开发-新建项目',title:'商丘市城市生命线新建项目',budget:213.5,time:'2026/5/7',deadline:'2026/5/28',buyer:'商丘市城市管理局',phone:'0370-3299006',agent:'河南鸿森工程管理咨询有限公司',agentPhone:'0370-2221619',link:'https://www.qianlima.com/bid-594981110.html',priority:'medium'},
-  {id:'u9',region:'河南-安阳-安阳县',product:'城市生命线',incomeType:'项目开发-定制化开发-新建项目',title:'安阳县城市生命线新建项目',budget:27.4,time:'2026/5/7',deadline:'2026/5/19',buyer:'安阳县住房和城乡建设局',phone:'137037288772',agent:'河南英格工程管理有限公司',link:'https://www.qianlima.com/bid-595114068.html',priority:'low'},
-  {id:'u10',region:'广东-深圳-坪山区',product:'运管服',incomeType:'项目开发-定制化开发-升级优化',title:'坪山区运管服平台升级优化（补充）',budget:30,time:'2026/5/12',deadline:'2026/5/15',buyer:'深圳市坪山区城市管理和综合执法局',team:'广东区',link:'https://www.qianlima.com/bid-596396440.html',priority:'low'}
-];
-
-const sanitationData = [
-  {id:'s1',title:'潍坊市城市管理行政执法支队渣土车智能监管系统升级及信创改造',time:'2026/5/12',budget:100.52,province:'山东',city:'潍坊',content:'渣土车智能监管系统升级改造（含APP）、城市运管服平台信创适配改造（智慧环卫、智慧公厕等系统）',incomeType:'信息化项目',link:'https://www.qianlima.com/bid-596014793.html',strategy:'建议跟进政府侧，主推智能车辆监管系统（网页和移动端）、城市运管服平台信创适配改造',priority:'medium'},
-  {id:'s2',title:'福州长乐湖南镇环卫一体化',time:'2026/5/11',budget:667.94,province:'福建',city:'福州-长乐',content:'智慧环卫一体化管理：对在岗状态、考勤状态、作业状态实时监测；对工作量、工位、作业品质等数据进行多维度分析评估',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-596014793.html',strategy:'建议跟进企业侧，主推智慧环卫系统',remark:'有软著：图元环卫一体化管理信息系统V1.0',priority:'medium'},
-  {id:'s3',title:'廉江市智慧环卫综合管理系统及智慧违建治理平台建设',time:'2026/5/11',budget:576.84,province:'广东',city:'湛江-廉江',content:'数据归集与粤治慧专题建设、智慧环卫综合管理系统（含环卫收费管理）、智慧违建治理平台（无人机+AI）、物业租赁管理系统',incomeType:'信息化项目',link:'https://www.qianlima.com/bid-596045228.html',strategy:'建议跟进政府侧，主推运管服平台+智慧环卫系统、垃圾收费系统',priority:'high'},
-  {id:'s4',title:'瓯海区生活垃圾直运服务项目',time:'2026/5/9',budget:213.53,province:'浙江',city:'温州',content:'城市智慧环卫收运平台：实时显示车辆位置与行驶路线、建立收运台账、记录垃圾来源种类数量去向',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-595593468.html',strategy:'建议跟进企业侧，主推智慧环卫车辆管理、生活垃圾管理系统（车辆定位、AI路线规划、垃圾溯源）',priority:'medium'},
-  {id:'s5',title:'永嘉县岩头镇城区保洁服务',time:'2026/5/8',budget:54.6,province:'浙江',city:'温州-永嘉县',content:'道路机械化清扫、分类收运、公厕管理、智能手环与智慧城市管理系统兼容',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-595206025.html',strategy:'建议跟进政府侧，主推智慧环卫系统"人机协同"理念',priority:'low'},
-  {id:'s6',title:'杭海路(西段)及周边道路保洁服务',time:'2026/5/8',budget:125,province:'浙江',city:'杭州-上城区',content:'道路普扫、巡回保洁、垃圾清运、分类收运方案',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-595124214.html',strategy:'建议跟进企业侧，主推智能环卫系统（人机结合、垃圾清运分类收运）',priority:'low'},
-  {id:'s7',title:'清江浦区大运河以南片区环卫作业服务',time:'2026/5/7',budget:3300,province:'江苏',city:'淮安-清江浦区',content:'道路综合清扫保洁、垃圾转运、中转站运营管理、公厕保洁及设施维护',incomeType:'设备更新服务',link:'https://www.qianlima.com/bid-594920155.html',strategy:'建议跟进企业侧，主推智能环卫系统（机械作业车辆管理、人工保洁人员管理、垃圾收运全流程、中转站运维、公厕管理）',priority:'high'},
-  {id:'s8',title:'茂名市新型智慧城市（一期）项目',time:'2026/5/2',budget:133550,province:'广东',city:'茂名',content:'8个领域信息平台：智慧警务、智慧政务、智慧交通、城市运行管理服务平台、全民健康信息平台、智慧林业、水环境监管、应急管理系统',incomeType:'信息化项目',link:'https://www.qianlima.com/bid-594250445.html',strategy:'建议跟进政府侧，主推智慧环卫系统',priority:'high'},
-  {id:'s9',title:'汕尾市城区"数字城市"信息化建设项目（一期）',time:'2026/5/2',budget:26645,province:'广东',city:'汕尾-城区',content:'数字城市基础支撑底座、智慧城管+智慧文旅+智慧交通+基层治理体系、智慧环卫设施、充电桩、智慧灯杆等',incomeType:'信息化项目',link:'https://www.qianlima.com/bid-594247221.html',strategy:'建议跟进政府侧，主推智慧环卫系统及垃圾收费管理系统',remark:'专项债项目',priority:'high'},
-  {id:'s10',title:'天津港保税区2026-2028年生活垃圾综合服务项目',time:'2026/4/30',budget:4225.02,province:'天津',city:'天津-滨海新区',content:'智慧运营平台、车载物联终端、盲区预警系统、前后摄像头、油耗传感器、户外高清网络摄像头等',incomeType:'环卫线下服务',link:'https://www.qianlima.com/bid-594140979.html',strategy:'建议跟进企业侧，主推车载定位设备及配套、企业侧环卫系统',priority:'medium'}
-];
-
-const allData = {collect:collectData,urban:urbanData,sanitation:sanitationData};
+let allData = {collect:[],urban:[],sanitation:[]};
 let currentTab = 'collect';
+
+function updateHeroStats() {
+  const collectBudget = allData.collect.reduce((s,d) => s + d.budget, 0);
+  const urbanBudget = allData.urban.reduce((s,d) => s + d.budget, 0);
+  const sanitationBudget = allData.sanitation.reduce((s,d) => s + d.budget, 0);
+  const totalCount = allData.collect.length + allData.urban.length + allData.sanitation.length;
+  const badge = document.getElementById('updateTimeBadge');
+  if(badge && window._updateTime) badge.textContent = window._updateTime;
+  document.querySelector('.hero-stats').innerHTML = `
+    <div class="hero-stat"><div class="num">${totalCount}</div><div class="label">重点商情项目</div></div>
+    <div class="hero-stat"><div class="num">${collectBudget>=10000?(collectBudget/10000).toFixed(1):collectBudget.toLocaleString()}<span style="font-size:1rem">${collectBudget>=10000?'亿':'万'}</span></div><div class="label">泛采集线预算</div></div>
+    <div class="hero-stat"><div class="num">${urbanBudget>=10000?(urbanBudget/10000).toFixed(1):urbanBudget.toLocaleString()}<span style="font-size:1rem">${urbanBudget>=10000?'亿':'万'}</span></div><div class="label">城管线估价</div></div>
+    <div class="hero-stat"><div class="num">${sanitationBudget>=10000?(sanitationBudget/10000).toFixed(1):sanitationBudget.toLocaleString()}<span style="font-size:1rem">${sanitationBudget>=10000?'亿':'万'}</span></div><div class="label">环卫线规模</div></div>
+  `;
+  document.getElementById('totalCount').textContent = totalCount;
+  const totalBudget = collectBudget + urbanBudget + sanitationBudget;
+  document.getElementById('totalAmount').textContent = totalBudget>=10000?(totalBudget/10000).toFixed(1)+'亿':totalBudget.toLocaleString()+'万';
+  const allProvinces = new Set();
+  allData.collect.forEach(d => allProvinces.add(d.province));
+  allData.urban.forEach(d => allProvinces.add(d.region.split('-')[0]));
+  allData.sanitation.forEach(d => allProvinces.add(d.province));
+  document.getElementById('regionCount').textContent = allProvinces.size;
+  const importantCount = [...allData.collect,...allData.urban,...allData.sanitation].filter(d => d.priority==='high').length;
+  document.getElementById('importantCount').textContent = importantCount;
+}
+
+function updateTabCounts() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const tab = btn.dataset.tab;
+    const countEl = btn.querySelector('.tab-count');
+    if(countEl && allData[tab]) countEl.textContent = allData[tab].length;
+  });
+}
+
+function showLoading() {
+  ['collect','urban','sanitation'].forEach(tab => {
+    const container = document.getElementById('cards-'+tab);
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text3)"><div style="font-size:2rem;margin-bottom:12px">⏳</div><div>数据加载中...</div></div>';
+  });
+}
 
 function renderCards(tab, data) {
   const container = document.getElementById('cards-'+tab);
@@ -563,12 +542,14 @@ function openDetail(tab, item) {
         <div class="detail-item"><div class="detail-label">产品线</div><div class="detail-value">${item.product}</div></div>
         <div class="detail-item full"><div class="detail-label">收入类型</div><div class="detail-value">${item.incomeType}</div></div>
         <div class="detail-item full"><div class="detail-label">招标单位</div><div class="detail-value">${item.buyer}</div></div>
+        ${item.winner?`<div class="detail-item full"><div class="detail-label">中标单位</div><div class="detail-value">${item.winner}</div></div>`:''}
+        ${item.winAmount?`<div class="detail-item"><div class="detail-label">中标金额</div><div class="detail-value">${item.winAmount}</div></div>`:''}
+        ${item.feedback?`<div class="detail-item"><div class="detail-label">反馈状态</div><div class="detail-value">${item.feedback}</div></div>`:''}
+        ${item.team?`<div class="detail-item"><div class="detail-label">建议跟进</div><div class="detail-value">${item.team}</div></div>`:''}
         ${item.phone?`<div class="detail-item"><div class="detail-label">联系电话</div><div class="detail-value">${item.phone}</div></div>`:''}
         ${item.agent?`<div class="detail-item"><div class="detail-label">招标代理</div><div class="detail-value">${item.agent}</div></div>`:''}
         ${item.agentPhone?`<div class="detail-item"><div class="detail-label">代理电话</div><div class="detail-value">${item.agentPhone}</div></div>`:''}
         <div class="detail-item"><div class="detail-label">投标截止</div><div class="detail-value">${item.deadline||'待定'}</div></div>
-        ${item.team?`<div class="detail-item"><div class="detail-label">建议跟进</div><div class="detail-value">${item.team}</div></div>`:''}
-        <div class="detail-item"><div class="detail-label">公告链接</div><div class="detail-value"><a href="${item.link}" target="_blank">查看原文 →</a></div></div>
       </div>`;
   } else {
     detailHTML = `
@@ -612,6 +593,31 @@ function closeModal(e) {
   document.body.style.overflow = '';
 }
 
+function renderProductLineCompare() {
+  const lines = [
+    {key:'collect', name:'泛采集产品线', color:'var(--primary)', bg:'rgba(79,70,229,.04)', border:'rgba(79,70,229,.1)'},
+    {key:'urban', name:'城管产品线', color:'var(--accent)', bg:'rgba(8,145,178,.04)', border:'rgba(8,145,178,.1)'},
+    {key:'sanitation', name:'环卫产品线', color:'var(--accent2)', bg:'rgba(124,58,237,.04)', border:'rgba(124,58,237,.1)'}
+  ];
+  const container = document.getElementById('productLineCompare');
+  container.innerHTML = lines.map(l => {
+    const items = allData[l.key];
+    const total = items.reduce((s,d) => s + d.budget, 0);
+    const avg = items.length ? total / items.length : 0;
+    const highCount = items.filter(d => d.priority==='high').length;
+    const display = total>=10000 ? (total/10000).toFixed(1)+'<span style="font-size:.9rem">亿</span>' : total.toLocaleString()+'<span style="font-size:.9rem">万</span>';
+    const avgDisplay = avg>=10000 ? (avg/10000).toFixed(1)+'亿' : avg.toFixed(0)+'万';
+    return `<div style="text-align:center;padding:24px;background:${l.bg};border-radius:var(--radius);border:1px solid ${l.border}">
+      <div style="font-size:.8rem;color:var(--text3);margin-bottom:8px">${l.name}</div>
+      <div style="font-size:2rem;font-weight:800;color:${l.color}">${display}</div>
+      <div style="font-size:.75rem;color:var(--text3);margin-top:4px">${items.length}个项目 · 均值${avgDisplay}</div>
+      <div style="margin-top:12px;display:flex;gap:4px;justify-content:center">
+        <span class="priority-badge priority-high">${highCount}个重点</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function renderRegionChart() {
   const provinces = {};
   allData.collect.forEach(d => { provinces[d.province] = (provinces[d.province]||0) + d.budget; });
@@ -636,22 +642,39 @@ function exportReport() {
 }
 
 function init() {
-  renderCards('collect', collectData);
-  renderCards('urban', urbanData);
-  renderCards('sanitation', sanitationData);
-  updateFilterOptions();
-  renderRegionChart();
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting) entry.target.classList.add('visible');
+  showLoading();
+  fetch('data.json')
+    .then(r => {
+      if(!r.ok) throw new Error('数据加载失败: ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      allData.collect = data.collect || [];
+      allData.urban = data.urban || [];
+      allData.sanitation = data.sanitation || [];
+      window._updateTime = data.updateTime || '';
+      renderCards('collect', allData.collect);
+      renderCards('urban', allData.urban);
+      renderCards('sanitation', allData.sanitation);
+      updateFilterOptions();
+      updateTabCounts();
+      updateHeroStats();
+      renderRegionChart();
+      renderProductLineCompare();
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      }, {threshold:0.1});
+      document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    })
+    .catch(err => {
+      console.error('加载数据失败:', err);
+      ['collect','urban','sanitation'].forEach(tab => {
+        const container = document.getElementById('cards-'+tab);
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--danger)"><div style="font-size:2rem;margin-bottom:12px">⚠️</div><div>数据加载失败，请刷新重试</div></div>';
+      });
     });
-  }, {threshold:0.1});
-  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-  const allProvinces = new Set();
-  collectData.forEach(d => allProvinces.add(d.province));
-  urbanData.forEach(d => allProvinces.add(d.region.split('-')[0]));
-  sanitationData.forEach(d => allProvinces.add(d.province));
-  document.getElementById('regionCount').textContent = allProvinces.size;
   document.querySelectorAll('.nav-links a').forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault();
