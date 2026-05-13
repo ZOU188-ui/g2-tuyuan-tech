@@ -197,6 +197,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .tab-content.active{display:block}
 @keyframes fadeTab{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
 
+/* More button */
+.load-more-wrap{text-align:center;margin-top:24px}
+.btn-load-more{padding:10px 32px;border-radius:var(--radius-sm);background:var(--bg2);border:1px solid var(--border);color:var(--text2);font-size:.9rem;font-weight:600;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:6px}
+.btn-load-more:hover{border-color:var(--primary);color:var(--primary);background:rgba(79,70,229,.04)}
+.btn-load-more .arrow{transition:transform .3s}
+.btn-load-more.expanded .arrow{transform:rotate(180deg)}
+
 /* Priority badges */
 .priority-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:700}
 .priority-high{background:rgba(220,38,38,.08);color:#DC2626}
@@ -205,6 +212,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
 /* Analysis full-width card */
 .analysis-full{grid-column:1/-1}
+
+/* Visual chart cards */
+.vis-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
+.vis-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.vis-card h4{font-size:.95rem;font-weight:700;margin-bottom:16px;color:var(--text)}
+.vis-bar{display:flex;flex-direction:column;gap:10px}
+.vis-bar-row{display:flex;align-items:center;gap:10px}
+.vis-bar-label{width:70px;font-size:.8rem;color:var(--text3);text-align:right;flex-shrink:0}
+.vis-bar-track{flex:1;height:28px;background:var(--bg3);border-radius:14px;overflow:hidden;position:relative}
+.vis-bar-fill{height:100%;border-radius:14px;transition:width 1.2s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;padding-left:12px;font-size:.75rem;font-weight:700;color:#fff;min-width:fit-content}
+.vis-donut-wrap{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:8px}
+.vis-donut{position:relative;width:160px;height:160px;flex-shrink:0}
+.vis-donut svg{transform:rotate(-90deg)}
+.vis-donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.vis-donut-center .d-num{font-size:1.5rem;font-weight:800;color:var(--text)}
+.vis-donut-center .d-label{font-size:.7rem;color:var(--text3)}
+.vis-legend{display:flex;flex-direction:column;gap:8px}
+.vis-legend-item{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--text2)}
+.vis-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+@media(max-width:768px){.vis-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -329,13 +356,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <div class="analysis-grid">
       <div class="analysis-card fade-up">
         <h3><span class="aicon ai1">📈</span>行业动态</h3>
-        <ul class="trend-list">
-          <li><span class="trend-dot td1"></span><span><strong>智慧城管加速升级：</strong>全国数字城管信息采集项目持续放量，50+项目覆盖全国，多地推行"人工+AI"双驱动模式，智能巡查与无人机巡检成为标配，南京8100万、长沙西北片区3015万为核心大额项目。</span></li>
-          <li><span class="trend-dot td2"></span><span><strong>城市生命线爆发增长：</strong>城市生命线工程成为城管线新增长极，日喀则3082万、汕尾2.66亿、唐山870万等项目密集释放，涵盖燃气、桥梁、供水等全场景监测。</span></li>
-          <li><span class="trend-dot td3"></span><span><strong>智慧环卫规模化推进：</strong>茂名13.3亿、汕尾2.66亿、银川1.8亿等大型项目落地，90+个项目覆盖全国，专项债支持推动环卫信息化从单点建设走向城市级平台整合。</span></li>
-          <li><span class="trend-dot td4"></span><span><strong>信创适配成新需求：</strong>潍坊、坪山区等地明确要求信创适配改造，国产化替代在城管环卫领域进入实质推进阶段。</span></li>
-          <li><span class="trend-dot td5"></span><span><strong>建筑垃圾监管强化：</strong>南京江宁区245.8万建筑垃圾项目、广州156.2万余泥渣土项目，渣土运输与建筑垃圾全流程监管需求上升。</span></li>
-        </ul>
+        <ul class="trend-list" id="trendList"></ul>
       </div>
 
       <div class="analysis-card fade-up stagger-1">
@@ -345,37 +366,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
       <div class="analysis-card fade-up stagger-2">
         <h3><span class="aicon ai3">💡</span>市场机遇洞察</h3>
-        <div class="insight-box">
-          <strong>运管服平台建设窗口期：</strong>城管产品线中运管服相关项目占比较大，定制化开发需求旺盛（升级优化+新建项目），深圳、南宁等地已启动招标，建议重点关注广东、广西区域。
-        </div>
-        <div class="insight-box">
-          <strong>环卫信息化渗透率提升：</strong>90个环卫项目中大量项目明确要求智慧环卫系统/平台，从传统保洁服务向"服务+信息化"打包转型趋势明显，智慧环卫系统、车辆管理、垃圾收费系统为主推方向。
-        </div>
-        <div class="insight-box">
-          <strong>泛采集服务向智能化演进：</strong>50+项目中多地将"人工+AI智能""无人机巡检"写入采购需求，长沙多个千万级项目、石家庄721万项目明确要求AI智能车载巡查，信息采集服务从劳动密集向技术密集转型。
-        </div>
-        <div class="insight-box">
-          <strong>专项债驱动的超大型项目：</strong>茂名13.3亿、汕尾2.66亿项目由专项债支撑，此类项目通常涵盖多子系统，可整体切入或分标段参与，环卫系统为关键入口。
-        </div>
+        <div id="insightBox"></div>
       </div>
 
       <div class="analysis-card fade-up stagger-3">
         <h3><span class="aicon ai4">🎯</span>竞争态势与建议</h3>
-        <ul class="trend-list">
-          <li><span class="trend-dot td1"></span><span><strong>现有竞争格局：</strong>政通智慧城市、北明软件在泛采集领域占据先发优势；中国移动等运营商切入智慧城管系统建设；传统物业/人力公司主导线下采集服务；伏泰信息、纳故环保在环卫信息化领域竞争力强。</span></li>
-          <li><span class="trend-dot td2"></span><span><strong>差异化切入点：</strong>依托"平台+AI"能力，以智能巡查、信创适配、运管服平台为核心差异化优势，避开纯人力服务竞争。图元环卫一体化管理信息系统等软著可形成准入壁垒。</span></li>
-          <li><span class="trend-dot td3"></span><span><strong>重点跟进策略：</strong>南京8100万、长沙西北片区3015万、徐州2520万为核心大额项目；茂名、汕尾为超大型标杆机会；唐山城市生命线870万为新兴方向突破点。</span></li>
-          <li><span class="trend-dot td4"></span><span><strong>时间窗口：</strong>5-6月为集中采购期，建议在4月底前完成前期对接，确保入围关键项目招标。</span></li>
-          <li><span class="trend-dot td5"></span><span><strong>合作伙伴策略：</strong>与地方设计院、运营商建立联合体，提升大型项目竞争力；在企业侧项目中与物业/保洁公司形成互补合作。</span></li>
-        </ul>
+        <ul class="trend-list" id="competitionList"></ul>
       </div>
 
       <div class="analysis-card analysis-full fade-up">
-        <h3><span class="aicon ai2">📊</span>三大产线金额对比分析</h3>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:16px" id="productLineCompare">
-          <div style="text-align:center;padding:24px;color:var(--text3)">加载中...</div>
-        </div>
-        </div>
+        <h3><span class="aicon ai2">📊</span>数据可视化总览</h3>
+        <div class="vis-grid" id="visualChart"></div>
       </div>
     </div>
   </div>
@@ -394,6 +395,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <script>
 let allData = {collect:[],urban:[],sanitation:[]};
 let currentTab = 'collect';
+let expandedTabs = {}; // 记录各tab是否展开
+
+const SHOW_COUNT = 6; // 默认展示6条
 
 function updateHeroStats() {
   const collectBudget = allData.collect.reduce((s,d) => s + d.budget, 0);
@@ -438,7 +442,10 @@ function showLoading() {
 function renderCards(tab, data) {
   const container = document.getElementById('cards-'+tab);
   container.innerHTML = '';
-  data.forEach((item,i) => {
+  const isExpanded = expandedTabs[tab];
+  const displayData = isExpanded ? data : data.slice(0, SHOW_COUNT);
+  
+  displayData.forEach((item,i) => {
     const isCollect = tab==='collect', isUrban = tab==='urban';
     const amount = item.budget;
     const region = isCollect ? item.region : isUrban ? item.region : (item.province+' '+item.city);
@@ -467,9 +474,26 @@ function renderCards(tab, data) {
     card.onclick = () => openDetail(tab, item);
     container.appendChild(card);
   });
+  
+  // 添加"查看更多"按钮
+  if(data.length > SHOW_COUNT) {
+    const wrap = document.createElement('div');
+    wrap.className = 'load-more-wrap';
+    wrap.innerHTML = `<button class="btn-load-more ${isExpanded?'expanded':''}" onclick="toggleExpand('${tab}')">
+      ${isExpanded ? '收起' : `查看更多（共${data.length}条）`}
+      <span class="arrow">${isExpanded ? '↑' : '↓'}</span>
+    </button>`;
+    container.appendChild(wrap);
+  }
+  
   setTimeout(()=>{
     container.querySelectorAll('.fade-up').forEach(el=>el.classList.add('visible'));
   },100);
+}
+
+function toggleExpand(tab) {
+  expandedTabs[tab] = !expandedTabs[tab];
+  filterCards();
 }
 
 function switchTab(tab) {
@@ -593,29 +617,140 @@ function closeModal(e) {
   document.body.style.overflow = '';
 }
 
-function renderProductLineCompare() {
-  const lines = [
-    {key:'collect', name:'泛采集产品线', color:'var(--primary)', bg:'rgba(79,70,229,.04)', border:'rgba(79,70,229,.1)'},
-    {key:'urban', name:'城管产品线', color:'var(--accent)', bg:'rgba(8,145,178,.04)', border:'rgba(8,145,178,.1)'},
-    {key:'sanitation', name:'环卫产品线', color:'var(--accent2)', bg:'rgba(124,58,237,.04)', border:'rgba(124,58,237,.1)'}
-  ];
-  const container = document.getElementById('productLineCompare');
-  container.innerHTML = lines.map(l => {
-    const items = allData[l.key];
-    const total = items.reduce((s,d) => s + d.budget, 0);
-    const avg = items.length ? total / items.length : 0;
-    const highCount = items.filter(d => d.priority==='high').length;
-    const display = total>=10000 ? (total/10000).toFixed(1)+'<span style="font-size:.9rem">亿</span>' : total.toLocaleString()+'<span style="font-size:.9rem">万</span>';
-    const avgDisplay = avg>=10000 ? (avg/10000).toFixed(1)+'亿' : avg.toFixed(0)+'万';
-    return `<div style="text-align:center;padding:24px;background:${l.bg};border-radius:var(--radius);border:1px solid ${l.border}">
-      <div style="font-size:.8rem;color:var(--text3);margin-bottom:8px">${l.name}</div>
-      <div style="font-size:2rem;font-weight:800;color:${l.color}">${display}</div>
-      <div style="font-size:.75rem;color:var(--text3);margin-top:4px">${items.length}个项目 · 均值${avgDisplay}</div>
-      <div style="margin-top:12px;display:flex;gap:4px;justify-content:center">
-        <span class="priority-badge priority-high">${highCount}个重点</span>
-      </div>
-    </div>`;
-  }).join('');
+// ========== 动态生成专项分析 ==========
+function renderDynamicAnalysis() {
+  renderTrends();
+  renderInsights();
+  renderCompetition();
+  renderVisualChart();
+}
+
+function fmtBudget(val) {
+  return val >= 10000 ? (val/10000).toFixed(1)+'亿' : val.toLocaleString()+'万';
+}
+
+function renderTrends() {
+  const cData = allData.collect, uData = allData.urban, sData = allData.sanitation;
+  const cTotal = cData.reduce((s,d)=>s+d.budget,0);
+  const uTotal = uData.reduce((s,d)=>s+d.budget,0);
+  const sTotal = sData.reduce((s,d)=>s+d.budget,0);
+  const cTop = [...cData].sort((a,b)=>b.budget-a.budget).slice(0,3);
+  const uTop = [...uData].sort((a,b)=>b.budget-a.budget).slice(0,3);
+  const sTop = [...sData].sort((a,b)=>b.budget-a.budget).slice(0,3);
+  
+  const trends = [];
+  // 泛采集动态
+  trends.push({
+    dot: 'td1',
+    title: '泛采集项目持续放量',
+    text: `共${cData.length}个项目，总预算${fmtBudget(cTotal)}。${cTop.map(d=>d.title.substring(0,12)+'..'+fmtBudget(d.budget)).join('、')}为核心大额项目，${cData.filter(d=>d.content&&d.content.includes('AI')).length}个项目涉及AI智能巡查。`
+  });
+  // 城管动态
+  const urbanProducts = {};
+  uData.forEach(d => { urbanProducts[d.product] = (urbanProducts[d.product]||0)+1; });
+  const topProduct = Object.entries(urbanProducts).sort((a,b)=>b[1]-a[1])[0];
+  trends.push({
+    dot: 'td2',
+    title: '城管产品线多方向爆发',
+    text: `共${uData.length}个项目，总预算${fmtBudget(uTotal)}。${topProduct?topProduct[0]+'类'+topProduct[1]+'个':''}为最密集方向，${uTop.map(d=>d.title.substring(0,10)+'..'+fmtBudget(d.budget)).join('、')}为头部项目。`
+  });
+  // 环卫动态
+  trends.push({
+    dot: 'td3',
+    title: '智慧环卫规模化推进',
+    text: `共${sData.length}个项目，总预算${fmtBudget(sTotal)}。${sTop.map(d=>d.title.substring(0,12)+'..'+fmtBudget(d.budget)).join('、')}为标杆项目，${sData.filter(d=>d.incomeType==='信息化项目').length}个纯信息化项目，其余多为"服务+信息化"打包。`
+  });
+  // 信创/专项债
+  const xinchuangCount = [...cData,...uData,...sData].filter(d => (d.content||'')+(d.title||'')+''.includes('信创')).length;
+  const zhuanxiangzhaiCount = [...sData].filter(d => (d.remark||'')+(d.strategy||'').includes('专项债')).length;
+  trends.push({
+    dot: 'td4',
+    title: '信创与专项债驱动',
+    text: `信创适配需求项目持续增加，国产化替代进入实质推进阶段。${zhuanxiangzhaiCount>0?zhuanxiangzhaiCount+'个环卫项目由专项债支撑，':'专项债支撑的超大型项目（如茂名、汕尾）'}可整体切入或分标段参与。`
+  });
+  // 建筑垃圾/新方向
+  const jzljCount = uData.filter(d=>d.product==='建筑垃圾').length;
+  trends.push({
+    dot: 'td5',
+    title: '细分赛道机会涌现',
+    text: `建筑垃圾监管项目${jzljCount}个，城市生命线项目${uData.filter(d=>d.product==='城市生命线').length}个，无人机巡查项目${cData.filter(d=>(d.content||'').includes('无人机')||(d.title||'').includes('无人机')).length}个，低空经济与AI融合成为新增长点。`
+  });
+  
+  document.getElementById('trendList').innerHTML = trends.map(t =>
+    `<li><span class="trend-dot ${t.dot}"></span><span><strong>${t.title}：</strong>${t.text}</span></li>`
+  ).join('');
+}
+
+function renderInsights() {
+  const cData = allData.collect, uData = allData.urban, sData = allData.sanitation;
+  const insights = [];
+  
+  // 城管运管服
+  const ygsCount = uData.filter(d=>d.product==='运管服').length;
+  if(ygsCount > 0) {
+    insights.push(`<strong>运管服平台建设窗口期：</strong>城管产品线中运管服相关项目${ygsCount}个，定制化开发需求旺盛，建议重点关注广东、广西等密集区域。`);
+  }
+  // 环卫信息化
+  const smartCount = sData.filter(d=>(d.content||'').includes('智慧环卫')||(d.content||'').includes('智慧运营')).length;
+  insights.push(`<strong>环卫信息化渗透率提升：</strong>${sData.length}个环卫项目中${smartCount}个明确要求智慧环卫系统/平台，从传统保洁向"服务+信息化"打包转型趋势明显。`);
+  // 泛采集智能
+  const aiCount = cData.filter(d=>(d.content||'').includes('AI')||(d.content||'').includes('智能')||(d.content||'').includes('无人机')).length;
+  insights.push(`<strong>泛采集服务向智能化演进：</strong>${cData.length}个项目中${aiCount}个写入AI智能或无人机需求，信息采集从劳动密集向技术密集转型。`);
+  // 超大型
+  const megaProjects = [...cData,...uData,...sData].filter(d=>d.budget>=10000).sort((a,b)=>b.budget-a.budget).slice(0,3);
+  if(megaProjects.length > 0) {
+    insights.push(`<strong>超大型项目突破机会：</strong>${megaProjects.map(d=>d.title.substring(0,10)+'..'+fmtBudget(d.budget)).join('、')}，此类项目涵盖多子系统，环卫系统为关键入口。`);
+  }
+  
+  document.getElementById('insightBox').innerHTML = insights.map(text =>
+    `<div class="insight-box">${text}</div>`
+  ).join('');
+}
+
+function renderCompetition() {
+  const cData = allData.collect, uData = allData.urban, sData = allData.sanitation;
+  const items = [];
+  
+  // 竞争格局
+  const winnerMap = {};
+  [...cData,...uData].forEach(d => {
+    if(d.winner && d.winner !== '/' && d.winner !== '全新首次招标，无历史中标单位') {
+      const w = d.winner.split('：').pop().split('：')[0] || d.winner;
+      winnerMap[w] = (winnerMap[w]||0)+1;
+    }
+  });
+  const topWinners = Object.entries(winnerMap).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  items.push({
+    dot: 'td1',
+    title: '现有竞争格局',
+    text: `${topWinners.map(w=>w[0].substring(0,8)+'('+w[1]+'个中标)').join('、')}在泛采集及城管领域占据先发优势；中国移动等运营商切入智慧城管系统建设。`
+  });
+  items.push({
+    dot: 'td2',
+    title: '差异化切入点',
+    text: `依托"平台+AI"能力，以智能巡查、信创适配、运管服平台为核心差异化优势，避开纯人力服务竞争。图元环卫一体化管理信息系统等软著可形成准入壁垒。`
+  });
+  // 核心项目
+  const coreProjects = [...cData,...uData,...sData].filter(d=>d.priority==='high').sort((a,b)=>b.budget-a.budget).slice(0,3);
+  items.push({
+    dot: 'td3',
+    title: '重点跟进策略',
+    text: `${coreProjects.map(d=>d.title.substring(0,10)+'..'+fmtBudget(d.budget)).join('、')}为核心大额项目，需优先对接确保入围。`
+  });
+  items.push({
+    dot: 'td4',
+    title: '时间窗口',
+    text: `5-6月为集中采购期，建议在招标发布后第一时间完成前期对接，确保入围关键项目。`
+  });
+  items.push({
+    dot: 'td5',
+    title: '合作伙伴策略',
+    text: `与地方设计院、运营商建立联合体提升大型项目竞争力；在企业侧项目中与物业/保洁公司形成互补合作。`
+  });
+  
+  document.getElementById('competitionList').innerHTML = items.map(t =>
+    `<li><span class="trend-dot ${t.dot}"></span><span><strong>${t.title}：</strong>${t.text}</span></li>`
+  ).join('');
 }
 
 function renderRegionChart() {
@@ -624,7 +759,7 @@ function renderRegionChart() {
   allData.urban.forEach(d => { const p = d.region.split('-')[0]; provinces[p] = (provinces[p]||0) + d.budget; });
   allData.sanitation.forEach(d => { provinces[d.province] = (provinces[d.province]||0) + d.budget; });
   const sorted = Object.entries(provinces).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const max = sorted[0][1];
+  const max = sorted[0]?sorted[0][1]:1;
   const colors = ['#4F46E5','#0891B2','#7C3AED','#059669','#D97706','#DB2777','#DC2626','#6366F1'];
   const chart = document.getElementById('regionChart');
   chart.innerHTML = sorted.map(([prov,val],i) => `
@@ -635,6 +770,89 @@ function renderRegionChart() {
       </div>
     </div>
   `).join('');
+}
+
+// ========== 可视化图表 ==========
+function renderVisualChart() {
+  const container = document.getElementById('visualChart');
+  const cData = allData.collect, uData = allData.urban, sData = allData.sanitation;
+  const cTotal = cData.reduce((s,d)=>s+d.budget,0);
+  const uTotal = uData.reduce((s,d)=>s+d.budget,0);
+  const sTotal = sData.reduce((s,d)=>s+d.budget,0);
+  const grandTotal = cTotal + uTotal + sTotal;
+  
+  // 左侧：三大产线金额柱状图
+  const maxLine = Math.max(cTotal, uTotal, sTotal);
+  const lines = [
+    {name:'泛采集产品线', total:cTotal, count:cData.length, color:'#4F46E5', bg:'rgba(79,70,229,.08)'},
+    {name:'城管产品线', total:uTotal, count:uData.length, color:'#0891B2', bg:'rgba(8,145,178,.08)'},
+    {name:'环卫产品线', total:sTotal, count:sData.length, color:'#7C3AED', bg:'rgba(124,58,237,.08)'}
+  ];
+  
+  const barHTML = lines.map(l => `
+    <div class="vis-bar-row">
+      <div class="vis-bar-label">${l.name.replace('产品线','')}</div>
+      <div class="vis-bar-track">
+        <div class="vis-bar-fill" style="width:${Math.max(l.total/maxLine*100,12)}%;background:${l.color}">${fmtBudget(l.total)} · ${l.count}个项目</div>
+      </div>
+    </div>
+  `).join('');
+  
+  // 右侧：项目优先级分布环形图
+  const all = [...cData,...uData,...sData];
+  const highC = all.filter(d=>d.priority==='high').length;
+  const medC = all.filter(d=>d.priority==='medium').length;
+  const lowC = all.filter(d=>d.priority==='low').length;
+  const total = highC+medC+lowC;
+  const highPct = total?((highC/total)*100).toFixed(1):0;
+  const medPct = total?((medC/total)*100).toFixed(1):0;
+  const lowPct = total?((lowC/total)*100).toFixed(1):0;
+  
+  // SVG 环形图
+  const r = 60, cx = 80, cy = 80, sw = 20;
+  const circumference = 2 * Math.PI * r;
+  const highLen = (highC/total)*circumference;
+  const medLen = (medC/total)*circumference;
+  const lowLen = (lowC/total)*circumference;
+  
+  const donutHTML = `
+    <div class="vis-donut-wrap">
+      <div class="vis-donut">
+        <svg width="160" height="160" viewBox="0 0 160 160">
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(220,38,38,.15)" stroke-width="${sw}" 
+            stroke-dasharray="${highLen} ${circumference-highLen}" stroke-dashoffset="0"/>
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(217,119,6,.15)" stroke-width="${sw}" 
+            stroke-dasharray="${medLen} ${circumference-medLen}" stroke-dashoffset="${-highLen}"/>
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(5,150,105,.15)" stroke-width="${sw}" 
+            stroke-dasharray="${lowLen} ${circumference-lowLen}" stroke-dashoffset="${-highLen-medLen}"/>
+        </svg>
+        <div class="vis-donut-center">
+          <div class="d-num">${total}</div>
+          <div class="d-label">项目总数</div>
+        </div>
+      </div>
+      <div class="vis-legend">
+        <div class="vis-legend-item"><span class="vis-legend-dot" style="background:#DC2626"></span>重点跟进 · ${highC}个 (${highPct}%)</div>
+        <div class="vis-legend-item"><span class="vis-legend-dot" style="background:#D97706"></span>一般跟进 · ${medC}个 (${medPct}%)</div>
+        <div class="vis-legend-item"><span class="vis-legend-dot" style="background:#059669"></span>常规关注 · ${lowC}个 (${lowPct}%)</div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-size:.85rem;color:var(--text2)"><strong>涉及总金额</strong></div>
+          <div style="font-size:1.3rem;font-weight:800;color:var(--primary)">${fmtBudget(grandTotal)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  container.innerHTML = `
+    <div class="vis-card">
+      <h4>📊 三大产线金额对比</h4>
+      <div class="vis-bar">${barHTML}</div>
+    </div>
+    <div class="vis-card">
+      <h4>🎯 项目优先级分布</h4>
+      ${donutHTML}
+    </div>
+  `;
 }
 
 function exportReport() {
@@ -659,8 +877,8 @@ function init() {
       updateFilterOptions();
       updateTabCounts();
       updateHeroStats();
+      renderDynamicAnalysis();
       renderRegionChart();
-      renderProductLineCompare();
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if(entry.isIntersecting) entry.target.classList.add('visible');
