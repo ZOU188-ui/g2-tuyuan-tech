@@ -221,6 +221,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <a href="#analysis">专项分析</a>
     </nav>
     <div class="nav-actions">
+      <span id="adminButtons" style="display:none">
+        <button class="btn btn-primary" onclick="document.getElementById('excelFileInput').click()">📥 导入Excel</button>
+        <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display:none" onchange="importExcel(this)">
+        <button class="btn btn-outline" onclick="copyJSON()" id="copyJsonBtn">📋 复制JSON</button>
+      </span>
       <button class="btn btn-outline" onclick="exportReport()">导出报告</button>
     </div>
   </div>
@@ -731,6 +736,11 @@ async function init() {
     });
   });
   document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+  
+  // 后台管理入口：网址加 ?admin 才显示管理按钮
+  if(window.location.search.includes('admin')) {
+    document.getElementById('adminButtons').style.display = 'inline-flex';
+  }
 }
 
 init();
