@@ -232,6 +232,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .vis-legend-item{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--text2)}
 .vis-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 @media(max-width:768px){.vis-grid{grid-template-columns:1fr}}
+
+/* Regional follow-up */
+.reg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:8px}
+@media(max-width:1024px){.reg-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.reg-grid{grid-template-columns:1fr}}
+.reg-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:var(--transition)}
+.reg-card:hover{box-shadow:var(--shadow);border-color:rgba(79,70,229,.2)}
+.reg-head{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.reg-prov{font-size:1.05rem;font-weight:700;color:var(--text)}
+.reg-stat{display:flex;gap:12px;font-size:.75rem;color:var(--text3)}
+.reg-stat span{display:flex;align-items:center;gap:3px}
+.reg-body{padding:16px 20px}
+.reg-line{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.reg-line:last-child{border-bottom:none}
+.reg-line-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#fff;flex-shrink:0}
+.reg-line-info{flex:1;min-width:0}
+.reg-line-name{font-size:.8rem;font-weight:600;color:var(--text)}
+.reg-line-detail{font-size:.7rem;color:var(--text3);margin-top:2px}
+.reg-line-amount{font-size:.85rem;font-weight:700;color:var(--text);flex-shrink:0}
+.reg-bar-mini{height:4px;background:var(--bg3);border-radius:2px;margin-top:4px;overflow:hidden}
+.reg-bar-fill{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
 </style>
 </head>
 <body>
@@ -246,6 +267,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <nav class="nav-links">
       <a href="#dashboard" class="active">商情看板</a>
       <a href="#analysis">专项分析</a>
+      <a href="#regional">区域跟进</a>
     </nav>
     <div class="nav-actions">
       <button class="btn btn-outline" onclick="exportReport()">导出报告</button>
@@ -379,6 +401,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <div class="vis-grid" id="visualChart"></div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- Regional Follow-up -->
+<section class="section" id="regional">
+  <div class="analysis-section">
+    <div class="section-header">
+      <h2>🗺️ 区域跟进</h2>
+      <p>重点省份商情项目跟进一览，按三大产线分类展示</p>
+    </div>
+    <div id="regionalGrid"></div>
   </div>
 </section>
 
@@ -623,6 +656,7 @@ function renderDynamicAnalysis() {
   renderInsights();
   renderCompetition();
   renderVisualChart();
+  renderRegional();
 }
 
 function fmtBudget(val) {
@@ -751,6 +785,74 @@ function renderCompetition() {
   document.getElementById('competitionList').innerHTML = items.map(t =>
     `<li><span class="trend-dot ${t.dot}"></span><span><strong>${t.title}：</strong>${t.text}</span></li>`
   ).join('');
+}
+
+// ========== 区域跟进 ==========
+function matchProvince(itemProv, targetProv) {
+  // 兼容"广东"与"广东省"等不同格式
+  if(!itemProv) return false;
+  return itemProv === targetProv || itemProv === targetProv.replace('省','') || targetProv.startsWith(itemProv) || itemProv.startsWith(targetProv.replace('省',''));
+}
+
+function renderRegional() {
+  const PROVINCES = ['广东省','湖南省','江苏省','山东省','河北省','安徽省','江西省','浙江省'];
+  const container = document.getElementById('regionalGrid');
+  
+  const provCards = PROVINCES.map(prov => {
+    const cItems = allData.collect.filter(d => matchProvince(d.province, prov));
+    const uItems = allData.urban.filter(d => matchProvince(d.region, prov));
+    const sItems = allData.sanitation.filter(d => matchProvince(d.province, prov));
+    
+    const allItems = [...cItems,...uItems,...sItems];
+    const totalBudget = allItems.reduce((s,d) => s+d.budget, 0);
+    const highCount = allItems.filter(d => d.priority==='high').length;
+    
+    const lines = [];
+    if(cItems.length > 0) lines.push({
+      name: '泛采集', icon: '采', color: '#4F46E5', bg: 'rgba(79,70,229,.1)',
+      count: cItems.length, budget: cItems.reduce((s,d)=>s+d.budget,0),
+      top: [...cItems].sort((a,b)=>b.budget-a.budget).slice(0,2)
+    });
+    if(uItems.length > 0) lines.push({
+      name: '城管', icon: '管', color: '#0891B2', bg: 'rgba(8,145,178,.1)',
+      count: uItems.length, budget: uItems.reduce((s,d)=>s+d.budget,0),
+      top: [...uItems].sort((a,b)=>b.budget-a.budget).slice(0,2)
+    });
+    if(sItems.length > 0) lines.push({
+      name: '环卫', icon: '卫', color: '#7C3AED', bg: 'rgba(124,58,237,.1)',
+      count: sItems.length, budget: sItems.reduce((s,d)=>s+d.budget,0),
+      top: [...sItems].sort((a,b)=>b.budget-a.budget).slice(0,2)
+    });
+    
+    return { prov, totalBudget, highCount, allCount: allItems.length, lines };
+  });
+  
+  const maxBudget = Math.max(...provCards.map(p=>p.totalBudget), 1);
+  
+  container.innerHTML = `<div class="reg-grid">${provCards.map(p => `
+    <div class="reg-card">
+      <div class="reg-head">
+        <span class="reg-prov">${p.prov}</span>
+        <div class="reg-stat">
+          <span>📋 ${p.allCount}个</span>
+          ${p.highCount>0?`<span style="color:#DC2626">🔥 ${p.highCount}重点</span>`:''}
+        </div>
+      </div>
+      <div class="reg-body">
+        ${p.lines.length > 0 ? p.lines.map(l => `
+          <div class="reg-line">
+            <div class="reg-line-icon" style="background:${l.color}">${l.icon}</div>
+            <div class="reg-line-info">
+              <div class="reg-line-name">${l.name} · ${l.count}个项目</div>
+              <div class="reg-bar-mini"><div class="reg-bar-fill" style="width:${Math.max(l.budget/maxBudget*100,5)}%;background:${l.color}"></div></div>
+              <div class="reg-line-detail">${l.top.map(t=>t.title.substring(0,10)+'..'+fmtBudget(t.budget)).join('｜')}</div>
+            </div>
+            <div class="reg-line-amount" style="color:${l.color}">${fmtBudget(l.budget)}</div>
+          </div>
+        `).join('') : '<div style="text-align:center;padding:16px;color:var(--text3);font-size:.85rem">暂无跟进项目</div>'}
+      </div>
+    </div>
+  `).join('')}</div>`;
 }
 
 function renderRegionChart() {
@@ -899,6 +1001,7 @@ function init() {
       const href = a.getAttribute('href');
       if(href==='#dashboard') document.getElementById('dashboard').scrollIntoView({behavior:'smooth'});
       else if(href==='#analysis') document.getElementById('analysis').scrollIntoView({behavior:'smooth'});
+      else if(href==='#regional') document.getElementById('regional').scrollIntoView({behavior:'smooth'});
       document.querySelectorAll('.nav-links a').forEach(l=>l.classList.remove('active'));
       a.classList.add('active');
     });
